@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NUTRIs Admin Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0F0A06;
+    --surface: #1A1008;
+    --card: #231508;
+    --border: rgba(200,151,42,.18);
+    --gold: #C8972A;
+    --gold-light: #E8C060;
+    --green: #2A8B4A;
+    --green-light: #3DB865;
+    --red: #C0392B;
+    --red-light: #E74C3C;
+    --text: #F5ECD8;
+    --muted: rgba(245,236,216,.5);
+    --dim: rgba(245,236,216,.3);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'DM Sans',sans-serif;
+    background:var(--bg); color:var(--text);
+    min-height:100vh;
+  }
+
+  /* LOGIN */
+  #login-screen {
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:var(--bg);
+  }
+  .login-box {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px; padding:40px 36px;
+    width:100%; max-width:360px; text-align:center;
+  }
+  .login-logo {
+    font-family:'Playfair Display',serif;
+    font-size:28px; letter-spacing:5px;
+    color:var(--gold-light); margin-bottom:6px;
+  }
+  .login-sub { font-size:13px; color:var(--muted); margin-bottom:28px; }
+  .login-box input {
+    width:100%; padding:12px 14px;
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--border);
+    border-radius:6px; color:var(--text);
+    font-family:'DM Sans',sans-serif; font-size:14px;
+    outline:none; margin-bottom:12px;
+    transition:border-color .2s;
+  }
+  .login-box input:focus { border-color:var(--gold); }
+  .login-btn {
+    width:100%; padding:13px;
+    background:var(--gold); color:#1A0A00;
+    font-weight:700; font-size:15px;
+    border:none; border-radius:6px; cursor:pointer;
+    transition:background .2s;
+  }
+  .login-btn:hover { background:var(--gold-light); }
+  .login-err { color:var(--red-light); font-size:13px; margin-top:10px; display:none; }
+
+  /* DASHBOARD */
+  #dashboard { display:none; }
+
+  /* TOP BAR */
+  .topbar {
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    padding:14px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:50;
+  }
+  .topbar-logo {
+    font-family:'Playfair Display',serif;
+    font-size:20px; letter-spacing:4px; color:var(--gold-light);
+  }
+  .topbar-right { display:flex; align-items:center; gap:16px; }
+  .topbar-user { font-size:13px; color:var(--muted); }
+  .logout-btn {
+    background:transparent; border:1px solid var(--border);
+    color:var(--muted); font-size:12px;
+    padding:6px 14px; border-radius:4px; cursor:pointer;
+    transition:all .2s;
+  }
+  .logout-btn:hover { border-color:var(--red-light); color:var(--red-light); }
+
+  /* MAIN LAYOUT */
+  .main { display:grid; grid-template-columns:220px 1fr; min-height:calc(100vh - 53px); }
+
+  /* SIDEBAR */
+  .sidebar {
+    background:var(--surface);
+    border-right:1px solid var(--border);
+    padding:20px 0;
+  }
+  .nav-item {
+    display:flex; align-items:center; gap:10px;
+    padding:12px 24px; cursor:pointer;
+    font-size:14px; color:var(--muted);
+    transition:all .15s; border-left:3px solid transparent;
+  }
+  .nav-item:hover { color:var(--text); background:rgba(200,151,42,.06); }
+  .nav-item.active { color:var(--gold-light); border-left-color:var(--gold); background:rgba(200,151,42,.08); }
+  .nav-icon { font-size:18px; }
+  .nav-section {
+    font-size:10px; letter-spacing:3px; text-transform:uppercase;
+    color:var(--dim); padding:20px 24px 8px;
+  }
+
+  /* CONTENT */
+  .content { padding:28px; overflow-y:auto; }
+  .page { display:none; }
+  .page.active { display:block; }
+
+  /* PAGE HEADER */
+  .page-header { margin-bottom:28px; }
+  .page-title {
+    font-family:'Playfair Display',serif;
+    font-size:26px; color:var(--text); margin-bottom:4px;
+  }
+  .page-sub { font-size:14px; color:var(--muted); }
+
+  /* STAT CARDS */
+  .stats-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:16px; margin-bottom:28px;
+  }
+  .stat-card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px; padding:20px;
+  }
+  .stat-label { font-size:12px; letter-spacing:1px; color:var(--muted); margin-bottom:8px; text-transform:uppercase; }
+  .stat-num { font-size:30px; font-weight:600; color:var(--text); line-height:1; }
+  .stat-change { font-size:12px; color:var(--green-light); margin-top:4px; }
+
+  /* TABLE */
+  .table-wrap {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px; overflow:hidden; margin-bottom:24px;
+  }
+  .table-head {
+    padding:16px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--border);
+  }
+  .table-head h3 { font-size:16px; font-weight:600; color:var(--text); }
+  .table-actions { display:flex; gap:10px; }
+  .btn-sm {
+    padding:7px 14px; font-size:12px; font-weight:600;
+    border-radius:4px; cursor:pointer; border:1px solid var(--border);
+    background:transparent; color:var(--muted); transition:all .2s;
+  }
+  .btn-sm:hover { border-color:var(--gold); color:var(--gold-light); }
+  .btn-sm.primary { background:var(--gold); color:#1A0A00; border-color:var(--gold); }
+  .btn-sm.primary:hover { background:var(--gold-light); }
+  table { width:100%; border-collapse:collapse; }
+  thead tr { background:rgba(255,255,255,.03); }
+  th {
+    text-align:left; padding:12px 16px;
+    font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--dim); font-weight:500; border-bottom:1px solid var(--border);
+  }
+  td { padding:12px 16px; font-size:14px; border-bottom:1px solid rgba(200,151,42,.07); }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:rgba(200,151,42,.04); }
+
+  /* BADGES */
+  .badge-new { background:rgba(42,139,74,.2); color:#3DB865; padding:3px 10px; border-radius:3px; font-size:11px; font-weight:600; }
+  .badge-confirmed { background:rgba(200,151,42,.2); color:var(--gold-light); padding:3px 10px; border-radius:3px; font-size:11px; font-weight:600; }
+  .badge-delivered { background:rgba(42,139,74,.3); color:#5DD080; padding:3px 10px; border-radius:3px; font-size:11px; font-weight:600; }
+  .badge-cancelled { background:rgba(192,57,43,.2); color:#E74C3C; padding:3px 10px; border-radius:3px; font-size:11px; font-weight:600; }
+  .badge-cod { background:rgba(255,255,255,.06); color:var(--muted); padding:3px 10px; border-radius:3px; font-size:11px; }
+  .badge-bkash { background:rgba(226,25,120,.15); color:#FF6EB4; padding:3px 10px; border-radius:3px; font-size:11px; }
+
+  /* FILTERS */
+  .filters { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+  .filter-btn {
+    padding:7px 16px; font-size:13px;
+    border:1px solid var(--border);
+    border-radius:20px; cursor:pointer;
+    background:transparent; color:var(--muted);
+    transition:all .15s;
+  }
+  .filter-btn:hover,.filter-btn.active { border-color:var(--gold); color:var(--gold-light); background:rgba(200,151,42,.08); }
+
+  /* SEARCH */
+  .search-bar {
+    width:100%; padding:10px 14px;
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--border);
+    border-radius:6px; color:var(--text);
+    font-family:'DM Sans',sans-serif; font-size:14px;
+    outline:none; margin-bottom:16px;
+  }
+  .search-bar:focus { border-color:var(--gold); }
+
+  /* PRODUCT MANAGER */
+  .product-manager-grid {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:24px;
+  }
+  .form-section {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px; padding:24px;
+  }
+  .form-section h3 { font-size:16px; font-weight:600; margin-bottom:20px; color:var(--text); }
+  .field { margin-bottom:14px; }
+  .field label { display:block; font-size:12px; color:var(--muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:.5px; }
+  .field input, .field select, .field textarea {
+    width:100%; padding:10px 12px;
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--border);
+    border-radius:6px; color:var(--text);
+    font-family:'DM Sans',sans-serif; font-size:14px;
+    outline:none; transition:border-color .2s;
+  }
+  .field input:focus,.field select:focus,.field textarea:focus { border-color:var(--gold); }
+  .field textarea { height:80px; resize:vertical; }
+  .field select option { background:#231508; }
+  .save-btn {
+    width:100%; padding:12px;
+    background:var(--gold); color:#1A0A00;
+    font-weight:700; font-size:14px;
+    border:none; border-radius:6px; cursor:pointer;
+    transition:background .2s; margin-top:6px;
+  }
+  .save-btn:hover { background:var(--gold-light); }
+
+  .product-list-item {
+    display:flex; align-items:center; gap:14px;
+    padding:14px 16px;
+    border:1px solid var(--border);
+    border-radius:8px; margin-bottom:10px;
+    transition:border-color .15s;
+  }
+  .product-list-item:hover { border-color:rgba(200,151,42,.4); }
+  .pli-emoji { font-size:28px; }
+  .pli-info { flex:1; }
+  .pli-name { font-size:14px; font-weight:600; color:var(--text); }
+  .pli-price { font-size:13px; color:var(--muted); }
+  .pli-actions { display:flex; gap:8px; }
+  .pli-btn {
+    padding:5px 12px; font-size:12px;
+    border-radius:4px; cursor:pointer; border:1px solid var(--border);
+    background:transparent; color:var(--muted); transition:all .15s;
+  }
+  .pli-btn:hover { color:var(--gold-light); border-color:var(--gold); }
+  .pli-btn.del:hover { color:var(--red-light); border-color:var(--red-light); }
+  .pli-stock {
+    font-size:11px; padding:2px 8px;
+    border-radius:3px; margin-left:6px;
+  }
+  .stock-ok { background:rgba(42,139,74,.2); color:var(--green-light); }
+  .stock-low { background:rgba(192,57,43,.2); color:var(--red-light); }
+
+  /* SETTINGS */
+  .settings-grid { display:grid; gap:20px; max-width:640px; }
+  .settings-card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px; padding:24px;
+  }
+  .settings-card h3 { font-size:15px; font-weight:600; margin-bottom:16px; color:var(--text); }
+
+  /* ORDER DETAIL MODAL */
+  .modal-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,.8); z-index:200;
+    align-items:center; justify-content:center;
+  }
+  .modal-overlay.show { display:flex; }
+  .modal {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px; padding:28px;
+    width:90%; max-width:480px;
+  }
+  .modal h3 { font-family:'Playfair Display',serif; font-size:20px; margin-bottom:20px; }
+  .modal-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(200,151,42,.1); font-size:14px; }
+  .modal-row:last-of-type { border-bottom:none; }
+  .modal-label { color:var(--muted); }
+  .modal-value { color:var(--text); font-weight:500; }
+  .modal-actions { display:flex; gap:10px; margin-top:20px; }
+  .modal-btn {
+    flex:1; padding:10px;
+    border-radius:6px; border:1px solid var(--border);
+    background:transparent; color:var(--muted);
+    font-size:13px; font-weight:600; cursor:pointer;
+    transition:all .15s;
+  }
+  .modal-btn.confirm { background:var(--green); border-color:var(--green); color:#fff; }
+  .modal-btn.deliver { background:var(--gold); border-color:var(--gold); color:#1A0A00; }
+  .modal-btn.cancel { }
+  .modal-btn.cancel:hover { border-color:var(--red-light); color:var(--red-light); }
+  .modal-close {
+    float:right; background:none; border:none;
+    color:var(--muted); font-size:20px; cursor:pointer;
+    line-height:1;
+  }
+
+  /* TOAST */
+  .toast {
+    position:fixed; bottom:24px; right:24px;
+    background:var(--green); color:#fff;
+    padding:12px 20px; border-radius:8px;
+    font-size:14px; font-weight:500;
+    z-index:300; display:none;
+    animation: fadeup .3s ease;
+  }
+  @keyframes fadeup { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+
+  @media(max-width:768px){
+    .main { grid-template-columns:1fr; }
+    .sidebar { display:none; }
+    .product-manager-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">NUTRIs</div>
+    <div class="login-sub">Admin Dashboard</div>
+    <input type="text" id="login-user" placeholder="Username" autocomplete="off">
+    <input type="password" id="login-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">প্রবেশ করুন</button>
+    <div class="login-err" id="login-err">ভুল Username বা Password</div>
+    <p style="font-size:11px;color:var(--dim);margin-top:14px;">Default: admin / nutris2024</p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo">NUTRIs</div>
+    <div class="topbar-right">
+      <span class="topbar-user">👤 Admin</span>
+      <button class="logout-btn" onclick="logout()">লগআউট</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="nav-section">মেনু</div>
+      <div class="nav-item active" onclick="showPage('overview')">
+        <span class="nav-icon">📊</span> Overview
+      </div>
+      <div class="nav-item" onclick="showPage('orders')">
+        <span class="nav-icon">📦</span> অর্ডার সমূহ
+      </div>
+      <div class="nav-section">পণ্য</div>
+      <div class="nav-item" onclick="showPage('products')">
+        <span class="nav-icon">🥜</span> প্রোডাক্ট ম্যানেজ
+      </div>
+      <div class="nav-section">সেটিংস</div>
+      <div class="nav-item" onclick="showPage('settings')">
+        <span class="nav-icon">⚙️</span> সেটিংস
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- OVERVIEW PAGE -->
+      <div class="page active" id="page-overview">
+        <div class="page-header">
+          <h2 class="page-title">Dashboard Overview</h2>
+          <p class="page-sub">আজকের সারসংক্ষেপ</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">মোট অর্ডার</div>
+            <div class="stat-num" id="stat-total">0</div>
+            <div class="stat-change">↑ আজকে নতুন</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">নতুন অর্ডার</div>
+            <div class="stat-num" id="stat-new" style="color:var(--green-light)">0</div>
+            <div class="stat-change" style="color:var(--muted)">কনফার্ম বাকি</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">ডেলিভার হয়েছে</div>
+            <div class="stat-num" id="stat-delivered" style="color:var(--gold-light)">0</div>
+            <div class="stat-change" style="color:var(--muted)">সফল অর্ডার</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">মোট বিক্রয়</div>
+            <div class="stat-num" id="stat-revenue" style="color:var(--gold)">৳০</div>
+            <div class="stat-change">ডেলিভারড থেকে</div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <div class="table-head">
+            <h3>সাম্প্রতিক অর্ডার</h3>
+            <button class="btn-sm" onclick="showPage('orders')">সব দেখুন →</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>অর্ডার ID</th><th>নাম</th><th>প্রোডাক্ট</th><th>মূল্য</th><th>স্ট্যাটাস</th>
+              </tr>
+            </thead>
+            <tbody id="recent-orders-body">
+              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:28px;">কোনো অর্ডার নেই</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ORDERS PAGE -->
+      <div class="page" id="page-orders">
+        <div class="page-header">
+          <h2 class="page-title">সকল অর্ডার</h2>
+          <p class="page-sub">Google Sheet থেকে লোড হচ্ছে</p>
+        </div>
+        <div class="filters">
+          <button class="filter-btn active" onclick="filterOrders('all',this)">সব</button>
+          <button class="filter-btn" onclick="filterOrders('new',this)">নতুন</button>
+          <button class="filter-btn" onclick="filterOrders('confirmed',this)">কনফার্মড</button>
+          <button class="filter-btn" onclick="filterOrders('delivered',this)">ডেলিভারড</button>
+          <button class="filter-btn" onclick="filterOrders('cancelled',this)">বাতিল</button>
+        </div>
+        <input class="search-bar" placeholder="নাম বা ফোন নম্বর দিয়ে সার্চ করুন..." oninput="searchOrders(this.value)">
+        <div class="table-wrap">
+          <div class="table-head">
+            <h3>অর্ডার লিস্ট</h3>
+            <div class="table-actions">
+              <button class="btn-sm" onclick="loadOrders()">🔄 রিফ্রেশ</button>
+              <button class="btn-sm primary" onclick="exportCSV()">📥 Export CSV</button>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>অর্ডার ID</th><th>তারিখ/সময়</th><th>নাম</th><th>মোবাইল</th><th>প্রোডাক্ট</th><th>মূল্য</th><th>পেমেন্ট</th><th>স্ট্যাটাস</th><th>একশন</th>
+              </tr>
+            </thead>
+            <tbody id="orders-body">
+              <tr><td colspan="9" style="text-align:center;color:var(--muted);padding:28px;">লোড হচ্ছে...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PRODUCTS PAGE -->
+      <div class="page" id="page-products">
+        <div class="page-header">
+          <h2 class="page-title">প্রোডাক্ট ম্যানেজমেন্ট</h2>
+          <p class="page-sub">Landing page-এর প্রোডাক্ট ও দাম আপডেট করুন</p>
+        </div>
+        <div class="product-manager-grid">
+          <div class="form-section">
+            <h3 id="prod-form-title">নতুন প্রোডাক্ট যোগ করুন</h3>
+            <div class="field">
+              <label>প্রোডাক্ট নাম</label>
+              <input type="text" id="p-name" placeholder="যেমন: Premium Almonds">
+            </div>
+            <div class="field">
+              <label>পরিমাণ / সাইজ</label>
+              <input type="text" id="p-size" placeholder="যেমন: ২৫০ গ্রাম">
+            </div>
+            <div class="field">
+              <label>আসল মূল্য (৳)</label>
+              <input type="number" id="p-old-price" placeholder="950">
+            </div>
+            <div class="field">
+              <label>অফার মূল্য (৳)</label>
+              <input type="number" id="p-price" placeholder="750">
+            </div>
+            <div class="field">
+              <label>স্টক পরিমাণ</label>
+              <input type="number" id="p-stock" placeholder="50">
+            </div>
+            <div class="field">
+              <label>বিবরণ</label>
+              <textarea id="p-desc" placeholder="প্রোডাক্টের সংক্ষিপ্ত বিবরণ..."></textarea>
+            </div>
+            <div class="field">
+              <label>ট্যাগ</label>
+              <select id="p-tag">
+                <option value="">কোনো ট্যাগ নেই</option>
+                <option value="bestseller">Best Seller</option>
+                <option value="limited">Limited</option>
+                <option value="new">New</option>
+              </select>
+            </div>
+            <button class="save-btn" onclick="saveProduct()">✓ প্রোডাক্ট সেভ করুন</button>
+          </div>
+
+          <div class="form-section">
+            <h3>বর্তমান প্রোডাক্ট সমূহ</h3>
+            <div id="product-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS PAGE -->
+      <div class="page" id="page-settings">
+        <div class="page-header">
+          <h2 class="page-title">সেটিংস</h2>
+        </div>
+        <div class="settings-grid">
+          <div class="settings-card">
+            <h3>🔗 Google Sheet সংযোগ</h3>
+            <div class="field">
+              <label>Google Apps Script URL</label>
+              <input type="text" id="s-script-url" placeholder="https://script.google.com/macros/s/...">
+            </div>
+            <div class="field">
+              <label>Google Sheet ID</label>
+              <input type="text" id="s-sheet-id" placeholder="Sheet ID (URL থেকে নিন)">
+            </div>
+            <button class="save-btn" onclick="saveSettings('sheet')">সেভ করুন</button>
+          </div>
+          <div class="settings-card">
+            <h3>💳 পেমেন্ট তথ্য</h3>
+            <div class="field">
+              <label>bKash নম্বর</label>
+              <input type="text" id="s-bkash" placeholder="01XXXXXXXXX">
+            </div>
+            <div class="field">
+              <label>City Bank Account</label>
+              <input type="text" id="s-city">
+            </div>
+            <div class="field">
+              <label>Dutch Bangla Account</label>
+              <input type="text" id="s-dbbl">
+            </div>
+            <button class="save-btn" onclick="saveSettings('payment')">সেভ করুন</button>
+          </div>
+          <div class="settings-card">
+            <h3>🔐 পাসওয়ার্ড পরিবর্তন</h3>
+            <div class="field">
+              <label>নতুন Username</label>
+              <input type="text" id="s-user" placeholder="admin">
+            </div>
+            <div class="field">
+              <label>নতুন Password</label>
+              <input type="password" id="s-pass" placeholder="নতুন পাসওয়ার্ড">
+            </div>
+            <button class="save-btn" onclick="changePassword()">পরিবর্তন করুন</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end content -->
+  </div><!-- end main -->
+</div><!-- end dashboard -->
+
+<!-- ORDER DETAIL MODAL -->
+<div class="modal-overlay" id="order-modal" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('order-modal').classList.remove('show')">✕</button>
+    <h3>অর্ডার বিস্তারিত</h3>
+    <div id="modal-content"></div>
+    <div class="modal-actions">
+      <button class="modal-btn confirm" onclick="updateOrderStatus('confirmed')">✓ কনফার্ম</button>
+      <button class="modal-btn deliver" onclick="updateOrderStatus('delivered')">🚚 ডেলিভারড</button>
+      <button class="modal-btn cancel" onclick="updateOrderStatus('cancelled')">✕ বাতিল</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ---- AUTH ----
+const ADMIN_KEY = 'nutris_admin';
+let credentials = JSON.parse(localStorage.getItem(ADMIN_KEY+'_creds') || '{"u":"admin","p":"nutris2024"}');
+
+function doLogin() {
+  const u = document.getElementById('login-user').value;
+  const p = document.getElementById('login-pass').value;
+  if(u === credentials.u && p === credentials.p) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    initDashboard();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+  }
+}
+
+function logout() {
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+}
+
+function changePassword() {
+  const u = document.getElementById('s-user').value || credentials.u;
+  const p = document.getElementById('s-pass').value;
+  if(!p) { showToast('পাসওয়ার্ড দিন'); return; }
+  credentials = {u, p};
+  localStorage.setItem(ADMIN_KEY+'_creds', JSON.stringify(credentials));
+  showToast('পাসওয়ার্ড পরিবর্তন হয়েছে ✓');
+}
+
+// ---- NAVIGATION ----
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if(id==='orders') loadOrders();
+  if(id==='products') renderProducts();
+  if(id==='settings') loadSettings();
+}
+
+// ---- DATA STORE (localStorage as demo, replace with Sheet) ----
+function getOrders() {
+  return JSON.parse(localStorage.getItem('nutris_orders') || '[]');
+}
+function saveOrders(orders) {
+  localStorage.setItem('nutris_orders', JSON.stringify(orders));
+}
+function getProducts() {
+  const def = [
+    {id:1, name:'Premium Almonds', size:'২৫০ গ্রাম', oldPrice:950, price:750, stock:47, desc:'কাঁচা ও রোস্টেড আমন্ড', tag:'bestseller', emoji:'🌰'},
+    {id:2, name:'Premium Cashews', size:'২৫০ গ্রাম', oldPrice:1050, price:850, stock:38, desc:'ক্রিমি কাজুবাদাম', tag:'bestseller', emoji:'🥜'},
+    {id:3, name:'Premium Walnuts', size:'২৫০ গ্রাম', oldPrice:1250, price:990, stock:12, desc:'ব্রেন ফুড নম্বর ওয়ান', tag:'limited', emoji:'🪨'},
+    {id:4, name:'NUTRIs Mixed Jar', size:'৫০০ গ্রাম', oldPrice:2800, price:2190, stock:9, desc:'Almonds+Cashews+Walnuts', tag:'limited', emoji:'🫙'},
+  ];
+  return JSON.parse(localStorage.getItem('nutris_products') || JSON.stringify(def));
+}
+function saveProductsData(p) { localStorage.setItem('nutris_products',JSON.stringify(p)); }
+
+// ---- INIT ----
+function initDashboard() {
+  // Demo orders if none
+  if(!getOrders().length) {
+    const demo = [
+      {id:'NTR-100001', name:'রাহেলা বেগম', phone:'01711234567', address:'গুলশান, ঢাকা', product:'Premium Almonds', price:750, payment:'cod', status:'new', timestamp:'০১/০৬/২০২৫'},
+      {id:'NTR-100002', name:'তানভীর আহমেদ', phone:'01812345678', address:'চট্টগ্রাম শহর', product:'Mixed Jar 500g', price:2190, payment:'bkash', status:'confirmed', timestamp:'০২/০৬/২০২৫'},
+      {id:'NTR-100003', name:'নুসরাত জাহান', phone:'01987654321', address:'সিলেট', product:'Premium Walnuts', price:990, payment:'cod', status:'delivered', timestamp:'০৩/০৬/২০২৫'},
+    ];
+    saveOrders(demo);
+  }
+  updateStats();
+  renderRecentOrders();
+}
+
+function updateStats() {
+  const orders = getOrders();
+  document.getElementById('stat-total').textContent = orders.length;
+  document.getElementById('stat-new').textContent = orders.filter(o=>o.status==='new').length;
+  document.getElementById('stat-delivered').textContent = orders.filter(o=>o.status==='delivered').length;
+  const rev = orders.filter(o=>o.status==='delivered').reduce((s,o)=>s+o.price,0);
+  document.getElementById('stat-revenue').textContent = '৳'+rev.toLocaleString();
+}
+
+// ---- ORDERS ----
+let allOrders = [];
+let currentFilter = 'all';
+
+function loadOrders() {
+  allOrders = getOrders();
+  renderOrdersTable(allOrders);
+  // Also try to fetch from Google Sheet if URL set
+  const url = localStorage.getItem('nutris_script_url');
+  if(url && url !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+    fetch(url+'?action=getOrders')
+      .then(r=>r.json())
+      .then(data=>{ if(data.orders){ allOrders=data.orders; renderOrdersTable(allOrders); }})
+      .catch(()=>{});
+  }
+}
+
+function renderOrdersTable(orders) {
+  const tbody = document.getElementById('orders-body');
+  if(!orders.length){
+    tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:28px;">কোনো অর্ডার নেই</td></tr>';
+    return;
+  }
+  tbody.innerHTML = orders.map(o=>`
+    <tr>
+      <td style="font-family:monospace;font-size:13px;color:var(--gold-light)">${o.id}</td>
+      <td style="font-size:12px;color:var(--muted)">${o.timestamp}</td>
+      <td style="font-weight:500">${o.name}</td>
+      <td style="font-size:13px">${o.phone}</td>
+      <td style="font-size:13px">${o.product}</td>
+      <td style="font-weight:600;color:var(--gold-light)">৳${o.price.toLocaleString()}</td>
+      <td><span class="badge-${o.payment}">${o.payment==='cod'?'COD':o.payment==='bkash'?'bKash':'Bank'}</span></td>
+      <td>${statusBadge(o.status)}</td>
+      <td><button class="btn-sm" onclick="openOrderModal('${o.id}')">বিস্তারিত</button></td>
+    </tr>
+  `).join('');
+}
+
+function statusBadge(s){
+  const map={new:'badge-new নতুন',confirmed:'badge-confirmed কনফার্মড',delivered:'badge-delivered ডেলিভারড',cancelled:'badge-cancelled বাতিল'};
+  const [cls,label]=(map[s]||'badge-new নতুন').split(' ');
+  return `<span class="${cls}">${label}</span>`;
+}
+
+function filterOrders(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const filtered = f==='all' ? allOrders : allOrders.filter(o=>o.status===f);
+  renderOrdersTable(filtered);
+}
+
+function searchOrders(q) {
+  const filtered = allOrders.filter(o=>
+    o.name.includes(q) || o.phone.includes(q) || o.id.includes(q)
+  );
+  renderOrdersTable(filtered);
+}
+
+// ---- ORDER MODAL ----
+let currentOrderId = null;
+function openOrderModal(id) {
+  currentOrderId = id;
+  const order = allOrders.find(o=>o.id===id);
+  if(!order) return;
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-row"><span class="modal-label">অর্ডার ID</span><span class="modal-value" style="font-family:monospace;color:var(--gold-light)">${order.id}</span></div>
+    <div class="modal-row"><span class="modal-label">নাম</span><span class="modal-value">${order.name}</span></div>
+    <div class="modal-row"><span class="modal-label">মোবাইল</span><span class="modal-value">${order.phone}</span></div>
+    <div class="modal-row"><span class="modal-label">ঠিকানা</span><span class="modal-value">${order.address}</span></div>
+    <div class="modal-row"><span class="modal-label">প্রোডাক্ট</span><span class="modal-value">${order.product}</span></div>
+    <div class="modal-row"><span class="modal-label">মূল্য</span><span class="modal-value" style="color:var(--gold-light)">৳${order.price.toLocaleString()}</span></div>
+    <div class="modal-row"><span class="modal-label">পেমেন্ট</span><span class="modal-value">${order.payment}</span></div>
+    <div class="modal-row"><span class="modal-label">সময়</span><span class="modal-value">${order.timestamp}</span></div>
+    <div class="modal-row"><span class="modal-label">স্ট্যাটাস</span><span class="modal-value">${statusBadge(order.status)}</span></div>
+  `;
+  document.getElementById('order-modal').classList.add('show');
+}
+
+function closeModal(e) {
+  if(e.target.id==='order-modal') document.getElementById('order-modal').classList.remove('show');
+}
+
+function updateOrderStatus(status) {
+  const orders = getOrders();
+  const idx = orders.findIndex(o=>o.id===currentOrderId);
+  if(idx>-1){ orders[idx].status=status; saveOrders(orders); }
+  document.getElementById('order-modal').classList.remove('show');
+  allOrders = orders;
+  renderOrdersTable(allOrders);
+  updateStats();
+  renderRecentOrders();
+  showToast('স্ট্যাটাস আপডেট হয়েছে ✓');
+}
+
+function renderRecentOrders() {
+  const orders = getOrders().slice(-5).reverse();
+  const tbody = document.getElementById('recent-orders-body');
+  if(!orders.length){ tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:28px;">কোনো অর্ডার নেই</td></tr>'; return; }
+  tbody.innerHTML = orders.map(o=>`
+    <tr>
+      <td style="font-family:monospace;font-size:13px;color:var(--gold-light)">${o.id}</td>
+      <td style="font-weight:500">${o.name}</td>
+      <td style="font-size:13px">${o.product}</td>
+      <td style="font-weight:600;color:var(--gold-light)">৳${o.price.toLocaleString()}</td>
+      <td>${statusBadge(o.status)}</td>
+    </tr>
+  `).join('');
+}
+
+// ---- EXPORT ----
+function exportCSV() {
+  const orders = getOrders();
+  const header = ['Order ID','Name','Phone','Address','Product','Price','Payment','Status','Timestamp'];
+  const rows = orders.map(o=>[o.id,o.name,o.phone,o.address,o.product,o.price,o.payment,o.status,o.timestamp]);
+  const csv = [header,...rows].map(r=>r.join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'nutris_orders_'+Date.now()+'.csv';
+  a.click();
+}
+
+// ---- PRODUCTS ----
+let editProductId = null;
+
+function renderProducts() {
+  const products = getProducts();
+  const list = document.getElementById('product-list');
+  list.innerHTML = products.map(p=>`
+    <div class="product-list-item">
+      <span class="pli-emoji">${p.emoji||'🥜'}</span>
+      <div class="pli-info">
+        <div class="pli-name">${p.name} <span class="pli-stock ${p.stock>15?'stock-ok':'stock-low'}">${p.stock} বাকি</span></div>
+        <div class="pli-price">৳${p.price} | ${p.size}</div>
+      </div>
+      <div class="pli-actions">
+        <button class="pli-btn" onclick="editProduct(${p.id})">সম্পাদনা</button>
+        <button class="pli-btn del" onclick="deleteProduct(${p.id})">মুছুন</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function editProduct(id) {
+  const products = getProducts();
+  const p = products.find(x=>x.id===id);
+  if(!p) return;
+  editProductId = id;
+  document.getElementById('p-name').value = p.name;
+  document.getElementById('p-size').value = p.size;
+  document.getElementById('p-old-price').value = p.oldPrice;
+  document.getElementById('p-price').value = p.price;
+  document.getElementById('p-stock').value = p.stock;
+  document.getElementById('p-desc').value = p.desc;
+  document.getElementById('p-tag').value = p.tag;
+  document.getElementById('prod-form-title').textContent = 'প্রোডাক্ট সম্পাদনা';
+}
+
+function saveProduct() {
+  const products = getProducts();
+  const data = {
+    name: document.getElementById('p-name').value,
+    size: document.getElementById('p-size').value,
+    oldPrice: parseInt(document.getElementById('p-old-price').value)||0,
+    price: parseInt(document.getElementById('p-price').value)||0,
+    stock: parseInt(document.getElementById('p-stock').value)||0,
+    desc: document.getElementById('p-desc').value,
+    tag: document.getElementById('p-tag').value,
+  };
+  if(!data.name || !data.price){ showToast('নাম ও মূল্য আবশ্যক'); return; }
+  if(editProductId) {
+    const idx = products.findIndex(p=>p.id===editProductId);
+    products[idx] = {...products[idx], ...data};
+    editProductId = null;
+    document.getElementById('prod-form-title').textContent = 'নতুন প্রোডাক্ট যোগ করুন';
+  } else {
+    const maxId = products.reduce((m,p)=>Math.max(m,p.id),0);
+    products.push({id: maxId+1, emoji:'🥜', ...data});
+  }
+  saveProductsData(products);
+  renderProducts();
+  showToast('প্রোডাক্ট সেভ হয়েছে ✓');
+  ['p-name','p-size','p-old-price','p-price','p-stock','p-desc'].forEach(id=>document.getElementById(id).value='');
+}
+
+function deleteProduct(id) {
+  if(!confirm('এই প্রোডাক্ট মুছে ফেলবেন?')) return;
+  const products = getProducts().filter(p=>p.id!==id);
+  saveProductsData(products);
+  renderProducts();
+  showToast('প্রোডাক্ট মোছা হয়েছে');
+}
+
+// ---- SETTINGS ----
+function loadSettings() {
+  const url = localStorage.getItem('nutris_script_url')||'';
+  const sheetId = localStorage.getItem('nutris_sheet_id')||'';
+  document.getElementById('s-script-url').value = url;
+  document.getElementById('s-sheet-id').value = sheetId;
+  const pay = JSON.parse(localStorage.getItem('nutris_payment')||'{}');
+  document.getElementById('s-bkash').value = pay.bkash||'';
+  document.getElementById('s-city').value = pay.city||'';
+  document.getElementById('s-dbbl').value = pay.dbbl||'';
+}
+
+function saveSettings(type) {
+  if(type==='sheet'){
+    localStorage.setItem('nutris_script_url', document.getElementById('s-script-url').value);
+    localStorage.setItem('nutris_sheet_id', document.getElementById('s-sheet-id').value);
+  }
+  if(type==='payment'){
+    localStorage.setItem('nutris_payment', JSON.stringify({
+      bkash: document.getElementById('s-bkash').value,
+      city: document.getElementById('s-city').value,
+      dbbl: document.getElementById('s-dbbl').value,
+    }));
+  }
+  showToast('সেটিংস সেভ হয়েছে ✓');
+}
+
+// ---- TOAST ----
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(()=>t.style.display='none', 2500);
+}
+
+// ---- RECEIVE ORDERS from landing page (same domain / localStorage) ----
+window.addEventListener('storage', e => {
+  if(e.key === 'nutris_new_order' && e.newValue) {
+    try {
+      const order = JSON.parse(e.newValue);
+      const orders = getOrders();
+      orders.push({...order, status:'new'});
+      saveOrders(orders);
+      updateStats();
+      renderRecentOrders();
+    } catch(err){}
+  }
+});
+
+// Auto-login if session exists
+if(sessionStorage.getItem('nutris_logged')) {
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('dashboard').style.display='block';
+  initDashboard();
+}
+</script>
+</body>
+</html>
