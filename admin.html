@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NUTRIs — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0F0A06;--surf:#1A1008;--card:#231508;--bdr:rgba(200,151,42,.18);--gold:#C8972A;--goldl:#E8C060;--green:#2A8B4A;--greenl:#3DB865;--red:#C0392B;--redl:#E74C3C;--text:#F5ECD8;--muted:rgba(245,236,216,.5);--dim:rgba(245,236,216,.3);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── LOGIN ── */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.lbox{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:40px 36px;width:100%;max-width:360px;text-align:center;}
+.llogo{font-family:'Playfair Display',serif;font-size:28px;letter-spacing:5px;color:var(--goldl);margin-bottom:6px;}
+.lsub{font-size:13px;color:var(--muted);margin-bottom:26px;}
+.lbox input{width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid var(--bdr);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:10px;}
+.lbox input:focus{border-color:var(--gold);}
+.lbtn{width:100%;padding:13px;background:var(--gold);color:#1A0A00;font-weight:700;font-size:15px;border:none;border-radius:6px;cursor:pointer;transition:.2s;}
+.lbtn:hover{background:var(--goldl);}
+.lerr{color:var(--redl);font-size:13px;margin-top:10px;display:none;}
+
+/* ── LAYOUT ── */
+#dash{display:none;}
+.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:13px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.tlogo{font-family:'Playfair Display',serif;font-size:20px;letter-spacing:4px;color:var(--goldl);}
+.tright{display:flex;align-items:center;gap:14px;}
+.tbadge{background:var(--greenl);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;display:none;animation:badgepop .3s ease;}
+@keyframes badgepop{from{transform:scale(.5);}to{transform:scale(1);}}
+.logbtn{background:transparent;border:1px solid var(--bdr);color:var(--muted);font-size:12px;padding:6px 14px;border-radius:4px;cursor:pointer;transition:.2s;}
+.logbtn:hover{border-color:var(--redl);color:var(--redl);}
+
+.layout{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 52px);}
+.sidebar{background:var(--surf);border-right:1px solid var(--bdr);padding:16px 0;}
+.nav-sec{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);padding:18px 22px 8px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 22px;cursor:pointer;font-size:14px;color:var(--muted);transition:.15s;border-left:3px solid transparent;}
+.nav-item:hover{color:var(--text);background:rgba(200,151,42,.06);}
+.nav-item.active{color:var(--goldl);border-left-color:var(--gold);background:rgba(200,151,42,.08);}
+.nav-icon{font-size:17px;}
+
+.content{padding:26px;overflow-y:auto;}
+.page{display:none;}
+.page.active{display:block;}
+.ph{margin-bottom:26px;}
+.ptitle{font-family:'Playfair Display',serif;font-size:24px;color:var(--text);margin-bottom:4px;}
+.psub{font-size:13px;color:var(--muted);}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:26px;}
+.stat{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:18px;}
+.slbl{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.snum{font-size:28px;font-weight:600;color:var(--text);line-height:1;}
+.schg{font-size:12px;color:var(--greenl);margin-top:4px;}
+
+/* ── TABLE ── */
+.twrap{background:var(--card);border:1px solid var(--bdr);border-radius:12px;overflow:hidden;margin-bottom:22px;}
+.thead{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr);}
+.thead h3{font-size:15px;font-weight:600;color:var(--text);}
+.tacts{display:flex;gap:9px;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:rgba(255,255,255,.03);}
+th{text-align:left;padding:11px 14px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);font-weight:500;border-bottom:1px solid var(--bdr);}
+td{padding:11px 14px;font-size:13px;border-bottom:1px solid rgba(200,151,42,.07);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(200,151,42,.03);}
+.new-row td:first-child{border-left:3px solid var(--greenl);}
+
+/* STATUS BADGES */
+.b-new{background:rgba(42,139,74,.2);color:#3DB865;padding:2px 9px;border-radius:3px;font-size:11px;font-weight:600;}
+.b-conf{background:rgba(200,151,42,.2);color:var(--goldl);padding:2px 9px;border-radius:3px;font-size:11px;font-weight:600;}
+.b-del{background:rgba(42,139,74,.3);color:#5DD080;padding:2px 9px;border-radius:3px;font-size:11px;font-weight:600;}
+.b-can{background:rgba(192,57,43,.2);color:var(--redl);padding:2px 9px;border-radius:3px;font-size:11px;font-weight:600;}
+.b-cod{background:rgba(255,255,255,.06);color:var(--muted);padding:2px 9px;border-radius:3px;font-size:11px;}
+.b-bkash{background:rgba(226,25,120,.15);color:#FF6EB4;padding:2px 9px;border-radius:3px;font-size:11px;}
+
+/* BUTTONS */
+.btn{padding:7px 13px;font-size:12px;font-weight:600;border-radius:4px;cursor:pointer;border:1px solid var(--bdr);background:transparent;color:var(--muted);transition:.2s;}
+.btn:hover{border-color:var(--gold);color:var(--goldl);}
+.btn.pri{background:var(--gold);color:#1A0A00;border-color:var(--gold);}
+.btn.pri:hover{background:var(--goldl);}
+
+/* FILTERS & SEARCH */
+.filters{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap;}
+.fbtn{padding:6px 14px;font-size:13px;border:1px solid var(--bdr);border-radius:20px;cursor:pointer;background:transparent;color:var(--muted);transition:.15s;}
+.fbtn:hover,.fbtn.act{border-color:var(--gold);color:var(--goldl);background:rgba(200,151,42,.08);}
+.srch{width:100%;padding:10px 13px;background:rgba(255,255,255,.05);border:1px solid var(--bdr);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:14px;}
+.srch:focus{border-color:var(--gold);}
+.srch::placeholder{color:var(--dim);}
+
+/* PRODUCT MANAGER */
+.pm-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.fs{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:22px;}
+.fs h3{font-size:15px;font-weight:600;margin-bottom:18px;color:var(--text);}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;background:rgba(255,255,255,.05);border:1px solid var(--bdr);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:.2s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);}
+.field textarea{height:70px;resize:vertical;}
+.field select option{background:#231508;}
+.sbtn{width:100%;padding:11px;background:var(--gold);color:#1A0A00;font-weight:700;font-size:14px;border:none;border-radius:6px;cursor:pointer;transition:.2s;margin-top:4px;}
+.sbtn:hover{background:var(--goldl);}
+.cbtn{width:100%;padding:8px;background:transparent;color:var(--muted);font-size:13px;border:1px solid var(--bdr);border-radius:6px;cursor:pointer;margin-top:6px;display:none;}
+.cbtn:hover{border-color:var(--redl);color:var(--redl);}
+
+.pli{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--bdr);border-radius:8px;margin-bottom:9px;transition:.15s;}
+.pli:hover{border-color:rgba(200,151,42,.4);}
+.pem{font-size:26px;}
+.pinfo{flex:1;}
+.pname{font-size:13px;font-weight:600;color:var(--text);}
+.pprice{font-size:12px;color:var(--muted);}
+.pacts{display:flex;gap:7px;}
+.pedt,.pdel{padding:4px 11px;font-size:12px;border-radius:4px;cursor:pointer;border:1px solid var(--bdr);background:transparent;color:var(--muted);transition:.15s;}
+.pedt:hover{color:var(--goldl);border-color:var(--gold);}
+.pdel:hover{color:var(--redl);border-color:var(--redl);}
+.sok{background:rgba(42,139,74,.2);color:var(--greenl);font-size:11px;padding:2px 8px;border-radius:3px;margin-left:5px;}
+.slow{background:rgba(192,57,43,.2);color:var(--redl);font-size:11px;padding:2px 8px;border-radius:3px;margin-left:5px;}
+
+/* SETTINGS */
+.sg{display:grid;gap:18px;max-width:620px;}
+.sc{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:22px;}
+.sc h3{font-size:15px;font-weight:600;margin-bottom:14px;color:var(--text);}
+
+/* MODAL */
+.moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:center;justify-content:center;}
+.moverlay.show{display:flex;}
+.modal{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:26px;width:90%;max-width:460px;}
+.modal h3{font-family:'Playfair Display',serif;font-size:19px;margin-bottom:18px;}
+.mrow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(200,151,42,.1);font-size:13px;}
+.mrow:last-of-type{border-bottom:none;}
+.mlbl{color:var(--muted);}
+.mval{color:var(--text);font-weight:500;}
+.macts{display:flex;gap:9px;margin-top:18px;}
+.mbtn{flex:1;padding:9px;border-radius:6px;border:1px solid var(--bdr);background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:.15s;}
+.mbtn.conf{background:var(--green);border-color:var(--green);color:#fff;}
+.mbtn.delv{background:var(--gold);border-color:var(--gold);color:#1A0A00;}
+.mbtn.canc:hover{border-color:var(--redl);color:var(--redl);}
+.mclose{float:right;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--green);color:#fff;padding:11px 18px;border-radius:8px;font-size:14px;font-weight:500;z-index:300;display:none;animation:tin .3s ease;}
+@keyframes tin{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+@media(max-width:768px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.pm-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="lbox">
+    <div class="llogo">NUTRIs</div>
+    <div class="lsub">Admin Dashboard</div>
+    <input type="text"     id="lu" placeholder="Username" autocomplete="off">
+    <input type="password" id="lp" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
+    <button class="lbtn" onclick="login()">প্রবেশ করুন</button>
+    <div class="lerr" id="lerr">ভুল Username বা Password</div>
+    <p style="font-size:11px;color:var(--dim);margin-top:12px;">Default: admin / nutris2024</p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dash">
+  <div class="topbar">
+    <div class="tlogo">NUTRIs</div>
+    <div class="tright">
+      <span class="tbadge" id="new-badge">0 নতুন</span>
+      <span style="font-size:13px;color:var(--muted)">👤 Admin</span>
+      <button class="logbtn" onclick="logout()">লগআউট</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="nav-sec">মেনু</div>
+      <div class="nav-item active" onclick="go('overview',this)"><span class="nav-icon">📊</span> Overview</div>
+      <div class="nav-item" onclick="go('orders',this)"><span class="nav-icon">📦</span> অর্ডার সমূহ</div>
+      <div class="nav-sec">পণ্য</div>
+      <div class="nav-item" onclick="go('products',this)"><span class="nav-icon">🥜</span> প্রোডাক্ট ম্যানেজ</div>
+      <div class="nav-sec">সেটিংস</div>
+      <div class="nav-item" onclick="go('settings',this)"><span class="nav-icon">⚙️</span> সেটিংস</div>
+    </div>
+
+    <div class="content">
+
+      <!-- OVERVIEW -->
+      <div class="page active" id="pg-overview">
+        <div class="ph"><h2 class="ptitle">Dashboard Overview</h2><p class="psub">রিয়েল-টাইম ডেটা</p></div>
+        <div class="stats">
+          <div class="stat"><div class="slbl">মোট অর্ডার</div><div class="snum" id="s-total">0</div></div>
+          <div class="stat"><div class="slbl">নতুন অর্ডার</div><div class="snum" id="s-new" style="color:var(--greenl)">0</div><div class="schg">কনফার্ম বাকি</div></div>
+          <div class="stat"><div class="slbl">ডেলিভার হয়েছে</div><div class="snum" id="s-del" style="color:var(--goldl)">0</div></div>
+          <div class="stat"><div class="slbl">মোট বিক্রয়</div><div class="snum" id="s-rev" style="color:var(--gold)">৳০</div></div>
+        </div>
+        <div class="twrap">
+          <div class="thead"><h3>সাম্প্রতিক অর্ডার</h3><button class="btn" onclick="go('orders',document.querySelector('[onclick*=orders]'))">সব দেখুন →</button></div>
+          <table><thead><tr><th>ID</th><th>নাম</th><th>প্রোডাক্ট</th><th>মূল্য</th><th>স্ট্যাটাস</th></tr></thead>
+          <tbody id="recent-tb"></tbody></table>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="page" id="pg-orders">
+        <div class="ph"><h2 class="ptitle">সকল অর্ডার</h2><p class="psub" id="order-sub">লোড হচ্ছে...</p></div>
+        <div class="filters">
+          <button class="fbtn act" onclick="filterO('all',this)">সব</button>
+          <button class="fbtn" onclick="filterO('new',this)">নতুন</button>
+          <button class="fbtn" onclick="filterO('confirmed',this)">কনফার্মড</button>
+          <button class="fbtn" onclick="filterO('delivered',this)">ডেলিভারড</button>
+          <button class="fbtn" onclick="filterO('cancelled',this)">বাতিল</button>
+        </div>
+        <input class="srch" placeholder="নাম, ফোন বা অর্ডার ID..." oninput="searchO(this.value)">
+        <div class="twrap">
+          <div class="thead"><h3>অর্ডার লিস্ট</h3>
+            <div class="tacts">
+              <button class="btn" onclick="loadOrders()">🔄 রিফ্রেশ</button>
+              <button class="btn pri" onclick="exportCSV()">📥 CSV</button>
+            </div>
+          </div>
+          <table><thead><tr><th>অর্ডার ID</th><th>সময়</th><th>নাম</th><th>মোবাইল</th><th>প্রোডাক্ট</th><th>মূল্য</th><th>পেমেন্ট</th><th>স্ট্যাটাস</th><th></th></tr></thead>
+          <tbody id="order-tb"></tbody></table>
+        </div>
+      </div>
+
+      <!-- PRODUCTS -->
+      <div class="page" id="pg-products">
+        <div class="ph"><h2 class="ptitle">প্রোডাক্ট ম্যানেজমেন্ট</h2><p class="psub">সেভ করলে Customer Page সাথে সাথে আপডেট হবে</p></div>
+        <div class="pm-grid">
+          <div class="fs">
+            <h3 id="pform-title">নতুন প্রোডাক্ট</h3>
+            <div class="field"><label>নাম</label><input id="p-name" placeholder="Premium Almonds"></div>
+            <div class="field"><label>সাইজ</label><input id="p-size" placeholder="২৫০ গ্রাম"></div>
+            <div class="field"><label>আসল মূল্য (৳)</label><input type="number" id="p-oldp" placeholder="950"></div>
+            <div class="field"><label>অফার মূল্য (৳)</label><input type="number" id="p-price" placeholder="750"></div>
+            <div class="field"><label>স্টক সংখ্যা</label><input type="number" id="p-stock" placeholder="50"></div>
+            <div class="field"><label>বিবরণ</label><textarea id="p-desc" placeholder="সংক্ষিপ্ত বিবরণ..."></textarea></div>
+            <div class="field"><label>ট্যাগ</label>
+              <select id="p-tag"><option value="">কোনো ট্যাগ নেই</option><option value="bestseller">Best Seller</option><option value="limited">Limited</option><option value="new">New</option></select>
+            </div>
+            <button class="sbtn" onclick="saveProduct()">✓ সেভ করুন — Customer Page আপডেট হবে</button>
+            <button class="cbtn" id="cancel-btn" onclick="cancelEdit()">বাতিল</button>
+          </div>
+          <div class="fs"><h3>বর্তমান প্রোডাক্ট</h3><div id="plist"></div></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="page" id="pg-settings">
+        <div class="ph"><h2 class="ptitle">সেটিংস</h2></div>
+        <div class="sg">
+          <div class="sc">
+            <h3>💳 পেমেন্ট তথ্য (Customer Page এ দেখাবে)</h3>
+            <div class="field"><label>ফোন নম্বর (Footer)</label><input id="s-phone" placeholder="01XXXXXXXXX"></div>
+            <div class="field"><label>bKash নম্বর</label><input id="s-bkash" placeholder="01XXXXXXXXX"></div>
+            <div class="field"><label>City Bank A/C</label><input id="s-city" placeholder="Account number"></div>
+            <div class="field"><label>Dutch Bangla A/C</label><input id="s-dbbl" placeholder="Account number"></div>
+            <button class="sbtn" onclick="saveSettings()">সেভ করুন → Customer Page আপডেট হবে</button>
+          </div>
+          <div class="sc">
+            <h3>📦 রবিবারের স্টক রিসেট</h3>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">নতুন স্টক এলে এখান থেকে সব প্রোডাক্টের স্টক আপডেট করুন।</p>
+            <div class="field"><label>নতুন স্টক (প্রতিটি প্রোডাক্টে)</label><input type="number" id="s-reset" placeholder="50"></div>
+            <button class="sbtn" onclick="resetStock()">স্টক রিসেট করুন → Customer Page আপডেট হবে</button>
+          </div>
+          <div class="sc">
+            <h3>🔐 পাসওয়ার্ড পরিবর্তন</h3>
+            <div class="field"><label>নতুন Username</label><input id="s-user" placeholder="admin"></div>
+            <div class="field"><label>নতুন Password</label><input type="password" id="s-pass" placeholder="নতুন পাসওয়ার্ড"></div>
+            <button class="sbtn" onclick="changePass()">পরিবর্তন করুন</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="moverlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="mclose" onclick="closeModal()">✕</button>
+    <h3>অর্ডার বিস্তারিত</h3>
+    <div id="modal-body"></div>
+    <div class="macts">
+      <button class="mbtn conf" onclick="setStatus('confirmed')">✓ কনফার্ম</button>
+      <button class="mbtn delv" onclick="setStatus('delivered')">🚚 ডেলিভারড</button>
+      <button class="mbtn canc" onclick="setStatus('cancelled')">✕ বাতিল</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  STORAGE KEYS — must match index.html exactly
+// ════════════════════════════════════════════════════════
+const KEYS = {
+  products: 'nutris_products',
+  orders:   'nutris_orders',
+  settings: 'nutris_settings',
+  creds:    'nutris_creds',
+  session:  'nutris_session_ts',   // localStorage: timestamp
+};
+
+const DEFAULT_PRODUCTS = [
+  {id:1,emoji:'🌰',name:'Premium Almonds',  size:'২৫০ গ্রাম',oldPrice:950, price:750, stock:47,desc:'কাঁচা ও রোস্টেড আমন্ড।',tag:'bestseller'},
+  {id:2,emoji:'🥜',name:'Premium Cashews',  size:'২৫০ গ্রাম',oldPrice:1050,price:850, stock:38,desc:'ক্রিমি কাজুবাদাম।',tag:'bestseller'},
+  {id:3,emoji:'🪨',name:'Premium Walnuts',  size:'২৫০ গ্রাম',oldPrice:1250,price:990, stock:12,desc:'ব্রেন ফুড।',tag:'limited'},
+  {id:4,emoji:'🫙',name:'NUTRIs Mixed Jar', size:'৫০০ গ্রাম',oldPrice:2800,price:2190,stock:9, desc:'Almonds+Cashews+Walnuts।',tag:'limited'},
+];
+
+// ════════════════════════════════════════════════════════
+//  DATA HELPERS
+// ════════════════════════════════════════════════════════
+function getP(){ try{ return JSON.parse(localStorage.getItem(KEYS.products))||DEFAULT_PRODUCTS; }catch(e){ return DEFAULT_PRODUCTS; } }
+function getO(){ try{ return JSON.parse(localStorage.getItem(KEYS.orders))||[]; }catch(e){ return []; } }
+function getS(){ try{ return JSON.parse(localStorage.getItem(KEYS.settings))||{}; }catch(e){ return {}; } }
+function getCreds(){ try{ return JSON.parse(localStorage.getItem(KEYS.creds))||{u:'admin',p:'nutris2024'}; }catch(e){ return {u:'admin',p:'nutris2024'}; } }
+
+// ════════════════════════════════════════════════════════
+//  AUTH
+//  FIX: Use localStorage for session (survives tab close).
+//  Session expires after 12 hours of inactivity.
+// ════════════════════════════════════════════════════════
+const SESSION_HOURS = 12;
+
+function isLoggedIn(){
+  const ts = localStorage.getItem(KEYS.session);
+  if(!ts) return false;
+  const age = (Date.now() - parseInt(ts)) / 3600000; // hours
+  return age < SESSION_HOURS;
+}
+
+function login(){
+  const u = document.getElementById('lu').value.trim();
+  const p = document.getElementById('lp').value;
+  const c = getCreds();
+  if(u === c.u && p === c.p){
+    localStorage.setItem(KEYS.session, Date.now().toString());
+    showDash();
+  } else {
+    document.getElementById('lerr').style.display = 'block';
+  }
+}
+
+function logout(){
+  localStorage.removeItem(KEYS.session);
+  document.getElementById('dash').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('lu').value = '';
+  document.getElementById('lp').value = '';
+}
+
+function changePass(){
+  const u = document.getElementById('s-user').value.trim() || getCreds().u;
+  const p = document.getElementById('s-pass').value;
+  if(!p){ toast('পাসওয়ার্ড দিন'); return; }
+  localStorage.setItem(KEYS.creds, JSON.stringify({u,p}));
+  // Refresh session timestamp
+  localStorage.setItem(KEYS.session, Date.now().toString());
+  toast('পাসওয়ার্ড পরিবর্তন হয়েছে ✓');
+}
+
+function showDash(){
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dash').style.display = 'block';
+  initDash();
+}
+
+// ════════════════════════════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════════════════════════════
+function go(id, el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('pg-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  if(id==='orders')   loadOrders();
+  if(id==='products') renderProducts();
+  if(id==='settings') loadSettings();
+  // Refresh session on every navigation (keeps admin logged in while active)
+  localStorage.setItem(KEYS.session, Date.now().toString());
+}
+
+// ════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════
+function initDash(){
+  refreshStats();
+  renderRecentOrders();
+  startPoller();
+}
+
+// ════════════════════════════════════════════════════════
+//  STATS
+// ════════════════════════════════════════════════════════
+function refreshStats(){
+  const orders = getO();
+  document.getElementById('s-total').textContent = orders.length;
+  const newCnt = orders.filter(o=>o.status==='new').length;
+  document.getElementById('s-new').textContent   = newCnt;
+  document.getElementById('s-del').textContent   = orders.filter(o=>o.status==='delivered').length;
+  const rev = orders.filter(o=>o.status==='delivered').reduce((s,o)=>s+o.price,0);
+  document.getElementById('s-rev').textContent   = '৳'+rev.toLocaleString();
+  // Badge
+  const badge = document.getElementById('new-badge');
+  if(newCnt>0){ badge.style.display='inline'; badge.textContent=newCnt+' নতুন'; }
+  else badge.style.display='none';
+}
+
+// ════════════════════════════════════════════════════════
+//  ORDERS
+// ════════════════════════════════════════════════════════
+let allOrders = [];
+let curFilter = 'all';
+let curOrderId = null;
+
+function loadOrders(){
+  allOrders = getO().slice().reverse(); // newest first
+  document.getElementById('order-sub').textContent = 'মোট '+allOrders.length+'টি অর্ডার';
+  applyFilter();
+}
+
+function applyFilter(){
+  const list = curFilter==='all' ? allOrders : allOrders.filter(o=>o.status===curFilter);
+  renderTable(list);
+}
+
+function filterO(f, el){
+  curFilter = f;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('act'));
+  if(el) el.classList.add('act');
+  applyFilter();
+}
+
+function searchO(q){
+  const list = allOrders.filter(o=>(o.name||'').includes(q)||(o.phone||'').includes(q)||(o.id||'').includes(q));
+  renderTable(list);
+}
+
+function renderTable(orders){
+  const tb = document.getElementById('order-tb');
+  if(!orders.length){
+    tb.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:24px;">কোনো অর্ডার নেই</td></tr>';
+    return;
+  }
+  tb.innerHTML = orders.map(o=>`
+    <tr class="${o.status==='new'?'new-row':''}">
+      <td style="font-family:monospace;font-size:11px;color:var(--goldl)">${o.id||'-'}</td>
+      <td style="font-size:11px;color:var(--muted)">${o.ts||'-'}</td>
+      <td style="font-weight:500">${o.name}</td>
+      <td style="font-size:12px">${o.phone}</td>
+      <td style="font-size:12px">${o.product}</td>
+      <td style="font-weight:600;color:var(--goldl)">৳${o.price.toLocaleString()}</td>
+      <td><span class="${o.payment==='bkash'?'b-bkash':'b-cod'}">${o.payment==='cod'?'COD':o.payment==='bkash'?'bKash':'Bank'}</span></td>
+      <td>${sbadge(o.status)}</td>
+      <td><button class="btn" onclick="openModal('${o.id}')">বিস্তারিত</button></td>
+    </tr>`).join('');
+}
+
+function renderRecentOrders(){
+  const orders = getO().slice(-5).reverse();
+  const tb = document.getElementById('recent-tb');
+  if(!orders.length){
+    tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:22px;">কোনো অর্ডার নেই</td></tr>';
+    return;
+  }
+  tb.innerHTML = orders.map(o=>`
+    <tr>
+      <td style="font-family:monospace;font-size:11px;color:var(--goldl)">${o.id||'-'}</td>
+      <td style="font-weight:500">${o.name}</td>
+      <td style="font-size:12px">${o.product}</td>
+      <td style="font-weight:600;color:var(--goldl)">৳${o.price.toLocaleString()}</td>
+      <td>${sbadge(o.status)}</td>
+    </tr>`).join('');
+}
+
+function sbadge(s){
+  const m={new:'b-new নতুন',confirmed:'b-conf কনফার্মড',delivered:'b-del ডেলিভারড',cancelled:'b-can বাতিল'};
+  const parts=(m[s]||'b-new নতুন').split(' ');
+  return `<span class="${parts[0]}">${parts[1]}</span>`;
+}
+
+// ════════════════════════════════════════════════════════
+//  ORDER MODAL
+// ════════════════════════════════════════════════════════
+function openModal(id){
+  curOrderId = id;
+  const o = (allOrders.length?allOrders:getO()).find(x=>x.id===id);
+  if(!o) return;
+  document.getElementById('modal-body').innerHTML=`
+    <div class="mrow"><span class="mlbl">অর্ডার ID</span><span class="mval" style="font-family:monospace;color:var(--goldl)">${o.id}</span></div>
+    <div class="mrow"><span class="mlbl">নাম</span><span class="mval">${o.name}</span></div>
+    <div class="mrow"><span class="mlbl">মোবাইল</span><span class="mval">${o.phone}</span></div>
+    <div class="mrow"><span class="mlbl">ঠিকানা</span><span class="mval">${o.addr||'-'}</span></div>
+    <div class="mrow"><span class="mlbl">প্রোডাক্ট</span><span class="mval">${o.product}</span></div>
+    <div class="mrow"><span class="mlbl">মূল্য</span><span class="mval" style="color:var(--goldl)">৳${o.price.toLocaleString()}</span></div>
+    <div class="mrow"><span class="mlbl">পেমেন্ট</span><span class="mval">${o.payment}</span></div>
+    <div class="mrow"><span class="mlbl">সময়</span><span class="mval">${o.ts||'-'}</span></div>
+    <div class="mrow"><span class="mlbl">স্ট্যাটাস</span><span class="mval">${sbadge(o.status)}</span></div>`;
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+
+function setStatus(status){
+  const orders = getO();
+  const i = orders.findIndex(o=>o.id===curOrderId);
+  if(i>-1){ orders[i].status=status; localStorage.setItem(KEYS.orders,JSON.stringify(orders)); }
+  closeModal();
+  loadOrders();
+  refreshStats();
+  renderRecentOrders();
+  toast('স্ট্যাটাস → '+status+' ✓');
+}
+
+// ════════════════════════════════════════════════════════
+//  EXPORT CSV
+// ════════════════════════════════════════════════════════
+function exportCSV(){
+  const rows = getO();
+  const hdr  = ['Order ID','Name','Phone','Address','Product','Price','Payment','Status','Time'];
+  const data = rows.map(o=>[o.id,o.name,o.phone,o.addr,o.product,o.price,o.payment,o.status,o.ts]);
+  const csv  = [hdr,...data].map(r=>r.map(v=>`"${v||''}"`).join(',')).join('\n');
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download = 'nutris_orders_'+Date.now()+'.csv';
+  a.click();
+}
+
+// ════════════════════════════════════════════════════════
+//  PRODUCTS  ← changes immediately update customer page
+// ════════════════════════════════════════════════════════
+let editId = null;
+
+function renderProducts(){
+  const list = document.getElementById('plist');
+  list.innerHTML = getP().map(p=>`
+    <div class="pli">
+      <span class="pem">${p.emoji||'🥜'}</span>
+      <div class="pinfo">
+        <div class="pname">${p.name}<span class="${p.stock>15?'sok':'slow'}">${p.stock} বাকি</span></div>
+        <div class="pprice">৳${p.price} | ${p.size}</div>
+      </div>
+      <div class="pacts">
+        <button class="pedt" onclick="editProd(${p.id})">সম্পাদনা</button>
+        <button class="pdel" onclick="delProd(${p.id})">মুছুন</button>
+      </div>
+    </div>`).join('');
+}
+
+function editProd(id){
+  const p = getP().find(x=>x.id===id);
+  if(!p) return;
+  editId = id;
+  document.getElementById('p-name').value  = p.name;
+  document.getElementById('p-size').value  = p.size;
+  document.getElementById('p-oldp').value  = p.oldPrice;
+  document.getElementById('p-price').value = p.price;
+  document.getElementById('p-stock').value = p.stock;
+  document.getElementById('p-desc').value  = p.desc;
+  document.getElementById('p-tag').value   = p.tag;
+  document.getElementById('pform-title').textContent = 'প্রোডাক্ট সম্পাদনা';
+  document.getElementById('cancel-btn').style.display = 'block';
+}
+
+function cancelEdit(){
+  editId = null;
+  ['p-name','p-size','p-oldp','p-price','p-stock','p-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('p-tag').value = '';
+  document.getElementById('pform-title').textContent = 'নতুন প্রোডাক্ট';
+  document.getElementById('cancel-btn').style.display = 'none';
+}
+
+function saveProduct(){
+  const name  = document.getElementById('p-name').value.trim();
+  const price = parseInt(document.getElementById('p-price').value);
+  if(!name||!price){ toast('নাম ও মূল্য আবশ্যক'); return; }
+
+  const products = getP();
+  const data = {
+    name, price,
+    size:     document.getElementById('p-size').value,
+    oldPrice: parseInt(document.getElementById('p-oldp').value)||0,
+    stock:    parseInt(document.getElementById('p-stock').value)||0,
+    desc:     document.getElementById('p-desc').value,
+    tag:      document.getElementById('p-tag').value,
+    emoji:    '🥜',
+  };
+
+  if(editId){
+    const i = products.findIndex(p=>p.id===editId);
+    products[i] = {...products[i], ...data};
+  } else {
+    const maxId = products.reduce((m,p)=>Math.max(m,p.id),0);
+    products.push({id:maxId+1, ...data});
+  }
+
+  // ★ Saving to localStorage triggers 'storage' event in customer page → instant update
+  localStorage.setItem(KEYS.products, JSON.stringify(products));
+  renderProducts();
+  cancelEdit();
+  toast('প্রোডাক্ট সেভ হয়েছে — Customer Page আপডেট হয়েছে ✓');
+}
+
+function delProd(id){
+  if(!confirm('মুছে ফেলবেন?')) return;
+  const products = getP().filter(p=>p.id!==id);
+  localStorage.setItem(KEYS.products, JSON.stringify(products));
+  renderProducts();
+  toast('মোছা হয়েছে ✓');
+}
+
+// ════════════════════════════════════════════════════════
+//  SETTINGS  ← saves payment info, triggers storage event
+// ════════════════════════════════════════════════════════
+function loadSettings(){
+  const s = getS();
+  document.getElementById('s-phone').value = s.phone||'';
+  document.getElementById('s-bkash').value = s.bkash||'';
+  document.getElementById('s-city').value  = s.city||'';
+  document.getElementById('s-dbbl').value  = s.dbbl||'';
+}
+
+function saveSettings(){
+  const s = {
+    phone: document.getElementById('s-phone').value,
+    bkash: document.getElementById('s-bkash').value,
+    city:  document.getElementById('s-city').value,
+    dbbl:  document.getElementById('s-dbbl').value,
+  };
+  // ★ Triggers 'storage' event in customer page
+  localStorage.setItem(KEYS.settings, JSON.stringify(s));
+  toast('সেটিংস সেভ — Customer Page আপডেট হয়েছে ✓');
+}
+
+function resetStock(){
+  const n = parseInt(document.getElementById('s-reset').value);
+  if(!n||n<1){ toast('স্টক সংখ্যা দিন'); return; }
+  const products = getP().map(p=>({...p, stock:n}));
+  localStorage.setItem(KEYS.products, JSON.stringify(products));
+  if(document.getElementById('pg-products').classList.contains('active')) renderProducts();
+  toast('সকল প্রোডাক্টের স্টক '+n+' করা হয়েছে ✓');
+}
+
+// ════════════════════════════════════════════════════════
+//  REAL-TIME POLLER
+//  Polls every 2 seconds. Detects new orders from customer page.
+//  Also listens to 'storage' event for same-device cross-tab sync.
+// ════════════════════════════════════════════════════════
+let lastOrderCount = 0;
+
+function startPoller(){
+  lastOrderCount = getO().length;
+
+  // Poll (catches all cases including cross-device if using shared storage)
+  setInterval(()=>{
+    const orders = getO();
+    if(orders.length > lastOrderCount){
+      const diff = orders.length - lastOrderCount;
+      lastOrderCount = orders.length;
+      refreshStats();
+      renderRecentOrders();
+      const onOrders = document.getElementById('pg-orders').classList.contains('active');
+      if(onOrders){ allOrders=orders.slice().reverse(); applyFilter(); }
+      toast('🛍 '+diff+'টি নতুন অর্ডার এসেছে!');
+      // Flash badge
+      const badge = document.getElementById('new-badge');
+      badge.style.display='inline';
+      badge.textContent=orders.filter(o=>o.status==='new').length+' নতুন';
+    }
+  }, 2000);
+
+  // Cross-tab storage event (instant)
+  window.addEventListener('storage', e=>{
+    if(e.key === KEYS.orders){
+      const orders = JSON.parse(e.newValue||'[]');
+      if(orders.length > lastOrderCount){
+        lastOrderCount = orders.length;
+        allOrders = orders.slice().reverse();
+        refreshStats();
+        renderRecentOrders();
+        const onOrders = document.getElementById('pg-orders').classList.contains('active');
+        if(onOrders) applyFilter();
+        toast('🛍 নতুন অর্ডার এসেছে!');
+      }
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════════════════════
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._to);
+  t._to = setTimeout(()=>t.style.display='none', 3000);
+}
+
+// ════════════════════════════════════════════════════════
+//  BOOT  ← check session on every page load
+// ════════════════════════════════════════════════════════
+if(isLoggedIn()){
+  showDash();
+} // else login screen is already visible
+</script>
+</body>
+</html>

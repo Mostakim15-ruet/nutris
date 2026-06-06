@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NUTRIs — বাংলাদেশের প্রিমিয়াম নাটস ব্র্যান্ড</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FAF6F0;--warm:#FFFDF9;--dark:#2C1810;--mid:#5C3420;--light:#A0522D;--gold:#C8972A;--gold-l:#E8C060;--green:#2D5016;--green-l:#4A7C2A;--t-dark:#1A0F08;--t-mid:#4A3728;--t-light:#8B6E5A;--bdr:#E8D8C8;--red:#8B1A1A;}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--t-dark);font-size:16px;line-height:1.7;}
+
+/* URGENT TOP BAR */
+.urgent-bar{background:#1a0000;color:#fff;text-align:center;padding:10px 16px;font-size:13px;line-height:1.5;}
+.urgent-bar strong{color:#FFD700;}
+
+/* SCARCITY BAR */
+.scare-bar{background:var(--red);color:#fff;text-align:center;padding:10px 16px;font-size:13px;font-weight:500;}
+.scare-bar strong{color:#FFD700;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.5;}}
+.blink{animation:blink 1.2s infinite;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:var(--dark);padding:13px 24px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-family:'Playfair Display',serif;font-size:24px;color:var(--gold-l);letter-spacing:4px;text-decoration:none;}
+.logo span{color:#fff;}
+.nav-btn{background:var(--gold);color:var(--dark);font-weight:700;font-size:13px;padding:9px 20px;border-radius:4px;text-decoration:none;letter-spacing:1px;transition:.2s;}
+.nav-btn:hover{background:var(--gold-l);}
+
+/* FLASH */
+.flash{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:12px 22px;border-radius:8px;font-size:14px;border:1px solid var(--gold);z-index:999;display:none;white-space:nowrap;}
+.flash.show{display:block;}
+
+/* HERO */
+.hero{background:var(--dark);min-height:88vh;display:flex;align-items:center;justify-content:center;padding:60px 24px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(200,151,42,.15),transparent 65%);}
+.hero-inner{max-width:920px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;position:relative;z-index:1;}
+.eyebrow{display:inline-block;background:rgba(200,151,42,.15);border:1px solid rgba(200,151,42,.4);color:var(--gold-l);font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;padding:6px 14px;border-radius:2px;margin-bottom:18px;}
+h1{font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,56px);color:#fff;line-height:1.1;margin-bottom:18px;}
+h1 em{font-style:normal;color:var(--gold-l);}
+.hero-sub{font-size:16px;color:rgba(255,255,255,.65);margin-bottom:28px;line-height:1.8;}
+.badges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px;}
+.badge{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:3px;padding:5px 11px;font-size:12px;color:rgba(255,255,255,.8);}
+.badge::before{content:'✓';color:var(--gold);font-weight:700;}
+.cta-grp{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-gold{background:var(--gold);color:var(--dark);font-weight:700;font-size:15px;padding:15px 30px;border-radius:4px;border:none;cursor:pointer;text-decoration:none;transition:.2s;display:inline-block;}
+.btn-gold:hover{background:var(--gold-l);}
+.btn-outline{background:transparent;color:rgba(255,255,255,.8);font-size:15px;padding:15px 22px;border-radius:4px;border:1px solid rgba(255,255,255,.2);text-decoration:none;transition:.2s;display:inline-block;}
+.btn-outline:hover{border-color:rgba(255,255,255,.5);color:#fff;}
+
+/* HERO RIGHT */
+.hero-right{display:flex;flex-direction:column;gap:14px;}
+.hero-card{background:rgba(255,255,255,.06);border:1px solid rgba(200,151,42,.3);border-radius:12px;padding:22px;text-align:center;}
+.hero-emoji{font-size:68px;display:block;margin-bottom:10px;}
+.hero-card h3{font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:4px;}
+.hero-card p{font-size:13px;color:rgba(255,255,255,.5);}
+.stock-live{display:flex;align-items:center;gap:8px;background:rgba(139,26,26,.3);border:1px solid rgba(200,50,50,.4);border-radius:6px;padding:10px 14px;font-size:13px;color:#FFB4B4;font-weight:600;justify-content:center;}
+.dot{width:8px;height:8px;border-radius:50%;background:#FF4444;}
+@keyframes dp{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.7);}}
+.dot{animation:dp 1.2s infinite;}
+.viewers-box{background:rgba(200,151,42,.1);border:1px solid rgba(200,151,42,.25);border-radius:6px;padding:9px 14px;font-size:13px;color:var(--gold-l);text-align:center;}
+
+/* TIMER */
+.timer-wrap{background:var(--mid);padding:24px;text-align:center;}
+.timer-lbl{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-l);font-weight:600;margin-bottom:12px;}
+.timer-boxes{display:flex;justify-content:center;gap:12px;}
+.tbox{background:var(--dark);border:1px solid rgba(200,151,42,.3);border-radius:8px;padding:10px 18px;min-width:64px;}
+.tnum{font-family:'Playfair Display',serif;font-size:28px;color:var(--gold-l);display:block;line-height:1;}
+.tunit{font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;}
+
+/* SECTIONS */
+section{padding:68px 24px;}
+.inner{max-width:960px;margin:0 auto;}
+.s-lbl{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:10px;}
+.s-title{font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,40px);color:var(--dark);line-height:1.2;margin-bottom:14px;}
+.s-sub{font-size:16px;color:var(--t-mid);max-width:540px;line-height:1.8;}
+
+/* PRODUCTS GRID */
+.bg-warm{background:var(--warm);}
+.p-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;margin-top:36px;}
+.p-card{background:var(--cream);border:1px solid var(--bdr);border-radius:12px;overflow:hidden;transition:.2s;cursor:pointer;}
+.p-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(44,24,16,.1);}
+.p-img{background:var(--dark);height:170px;display:flex;align-items:center;justify-content:center;font-size:60px;position:relative;}
+.tag-best{position:absolute;top:10px;right:10px;background:var(--gold);color:var(--dark);font-size:10px;font-weight:700;padding:4px 9px;border-radius:3px;letter-spacing:1px;text-transform:uppercase;}
+.tag-lim{position:absolute;top:10px;right:10px;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:4px 9px;border-radius:3px;letter-spacing:1px;text-transform:uppercase;}
+.p-body{padding:18px;}
+.p-body h3{font-family:'Playfair Display',serif;font-size:19px;color:var(--dark);margin-bottom:5px;}
+.p-body p{font-size:13px;color:var(--t-light);margin-bottom:12px;line-height:1.6;}
+.s-bar-lbl{font-size:12px;color:var(--red);font-weight:600;margin-bottom:4px;}
+.s-bar{background:var(--bdr);border-radius:4px;height:5px;margin-bottom:12px;}
+.s-fill{background:var(--red);border-radius:4px;height:5px;transition:width .8s ease;}
+.p-meta{display:flex;justify-content:space-between;align-items:center;}
+.p-old{font-size:13px;color:var(--t-light);text-decoration:line-through;}
+.p-new{font-size:21px;font-weight:700;color:var(--dark);}
+.p-unit{font-size:12px;color:var(--t-light);}
+.btn-order{background:var(--dark);color:#fff;font-size:13px;font-weight:600;padding:9px 16px;border-radius:4px;border:none;cursor:pointer;letter-spacing:.5px;transition:.2s;text-decoration:none;display:inline-block;}
+.btn-order:hover{background:var(--mid);}
+
+/* BENEFITS */
+.bg-dark{background:var(--dark);}
+.bg-dark .s-title{color:#fff;}
+.bg-dark .s-sub{color:rgba(255,255,255,.6);}
+.b-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:36px;}
+.b-item{display:flex;gap:14px;padding:16px;background:rgba(255,255,255,.05);border:1px solid rgba(200,151,42,.2);border-radius:8px;}
+.b-num{font-family:'Playfair Display',serif;font-size:26px;color:var(--gold);line-height:1;flex-shrink:0;width:30px;}
+.b-text h5{font-size:14px;font-weight:600;color:#fff;margin-bottom:3px;}
+.b-text p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6;}
+
+/* WHY */
+.w-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-top:36px;}
+.w-card{padding:24px;border:1px solid var(--bdr);border-radius:10px;background:var(--warm);}
+.w-icon{font-size:30px;margin-bottom:12px;}
+.w-card h4{font-family:'Playfair Display',serif;font-size:17px;color:var(--dark);margin-bottom:7px;}
+.w-card p{font-size:13px;color:var(--t-mid);line-height:1.7;}
+
+/* REVIEWS */
+.bg-warm2{background:var(--warm);}
+.r-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:36px;}
+.r-card{background:var(--cream);border:1px solid var(--bdr);border-radius:10px;padding:20px;}
+.r-stars{color:var(--gold);font-size:15px;margin-bottom:9px;}
+.r-card p{font-size:13px;color:var(--t-mid);line-height:1.7;margin-bottom:12px;font-style:italic;}
+.reviewer{display:flex;align-items:center;gap:10px;}
+.r-av{width:34px;height:34px;border-radius:50%;background:var(--mid);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;}
+.r-name{font-size:13px;font-weight:600;color:var(--dark);}
+.r-loc{font-size:12px;color:var(--t-light);}
+
+/* ORDER SECTION */
+.o-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start;margin-top:36px;}
+.g-box{background:var(--dark);border-radius:10px;padding:22px;margin-bottom:22px;color:#fff;}
+.g-box h4{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-l);margin-bottom:7px;}
+.g-box p{font-size:14px;color:rgba(255,255,255,.7);line-height:1.7;}
+.trust-list{list-style:none;}
+.trust-list li{padding:9px 0;border-bottom:1px solid var(--bdr);font-size:14px;color:var(--t-mid);display:flex;align-items:center;gap:9px;}
+.trust-list li::before{content:'✓';color:var(--green-l);font-weight:700;}
+
+/* ORDER FORM */
+.o-form{background:var(--warm);border:1px solid var(--bdr);border-radius:12px;padding:28px;}
+.o-form h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--dark);margin-bottom:5px;}
+.f-sub{font-size:13px;color:var(--t-light);margin-bottom:22px;}
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:13px;font-weight:600;color:var(--t-mid);margin-bottom:5px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:11px 13px;border:1px solid var(--bdr);border-radius:6px;background:var(--cream);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--t-dark);outline:none;transition:.2s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--light);}
+.fg textarea{height:85px;resize:vertical;}
+
+/* PRODUCT OPTIONS */
+.p-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:14px;}
+.p-opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid var(--bdr);border-radius:8px;cursor:pointer;transition:.15s;background:var(--cream);}
+.p-opt:hover{border-color:var(--gold);}
+.p-opt.sel{border-color:var(--gold);background:rgba(200,151,42,.06);}
+.p-opt input[type=radio]{display:none;}
+.o-emoji{font-size:26px;}
+.o-info{flex:1;}
+.o-name{font-size:14px;font-weight:600;color:var(--dark);}
+.o-size{font-size:12px;color:var(--t-light);}
+.o-stock{font-size:11px;color:var(--red);font-weight:600;margin-top:1px;}
+.o-price{text-align:right;}
+.o-old{font-size:12px;text-decoration:line-through;color:var(--t-light);}
+.o-new{font-size:15px;font-weight:700;color:var(--dark);}
+
+/* PAYMENT */
+.pay-btns{display:flex;gap:8px;margin-bottom:16px;}
+.pay-btn{flex:1;padding:9px;border:2px solid var(--bdr);border-radius:6px;cursor:pointer;background:var(--cream);font-size:12px;font-weight:600;color:var(--t-mid);transition:.15s;text-align:center;}
+.pay-btn:hover{border-color:var(--light);}
+.pay-btn.sel{border-color:var(--gold);background:rgba(200,151,42,.06);color:var(--dark);}
+.pay-info-box{background:rgba(200,151,42,.1);border:1px solid rgba(200,151,42,.3);border-radius:6px;padding:11px 13px;font-size:13px;color:var(--mid);margin-bottom:16px;display:none;}
+.pay-info-box.show{display:block;}
+.o-total{background:rgba(200,151,42,.1);border:1px solid rgba(200,151,42,.3);border-radius:6px;padding:11px 14px;margin-bottom:14px;font-size:15px;font-weight:600;color:var(--dark);}
+.btn-submit{width:100%;background:var(--dark);color:#fff;font-size:15px;font-weight:700;padding:17px;border:none;border-radius:8px;cursor:pointer;transition:.2s;}
+.btn-submit:hover{background:var(--mid);}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;}
+.o-note{font-size:12px;color:var(--t-light);text-align:center;margin-top:9px;}
+.success-box{display:none;background:var(--cream);border:2px solid var(--green-l);border-radius:12px;padding:28px;text-align:center;}
+.success-box.show{display:block;}
+.success-box h3{font-family:'Playfair Display',serif;font-size:24px;color:var(--green);margin-bottom:7px;}
+.success-box p{color:var(--t-mid);font-size:14px;}
+
+/* FOOTER */
+footer{background:var(--dark);padding:36px 24px;text-align:center;}
+.f-logo{font-family:'Playfair Display',serif;font-size:26px;color:var(--gold-l);letter-spacing:5px;display:block;margin-bottom:10px;}
+footer p{font-size:13px;color:rgba(255,255,255,.4);line-height:1.8;}
+footer a{color:rgba(255,255,255,.5);text-decoration:none;}
+footer a:hover{color:var(--gold-l);}
+.f-links{display:flex;gap:18px;justify-content:center;margin:14px 0;flex-wrap:wrap;}
+
+@media(max-width:768px){
+  .hero-inner{grid-template-columns:1fr;gap:28px;}
+  .hero-right{order:-1;}
+  .o-grid{grid-template-columns:1fr;}
+  .timer-boxes{gap:8px;}
+  .tbox{padding:9px 12px;min-width:56px;}
+  .tnum{font-size:22px;}
+}
+</style>
+</head>
+<body>
+
+<!-- URGENT BAR -->
+<div class="urgent-bar">
+  🚨 <strong class="blink">সীমিত স্টক!</strong> প্রতি রবিবার রাত ১২টায় নতুন স্টক আসে। এই সপ্তাহে মাত্র <strong id="bar-stock">47</strong> প্যাক বাকি। <strong>আগে অর্ডার = আগে ডেলিভারি!</strong>
+</div>
+
+<!-- SCARCITY BAR -->
+<div class="scare-bar">
+  🔥 এই মুহূর্তে <strong id="viewers-top">23</strong> জন অর্ডার দেওয়ার কথা ভাবছেন — স্টক শেষ হলে পরের রবিবার পর্যন্ত অপেক্ষা করতে হবে!
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">NUTRI<span>s</span></a>
+  <a href="#order" class="nav-btn">এখনই অর্ডার করুন</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow">বাংলাদেশের প্রিমিয়াম নাটস ব্র্যান্ড</div>
+      <h1>প্রকৃতির সেরা<br><em>শক্তির উৎস</em></h1>
+      <p class="hero-sub">আমদানিকৃত প্রিমিয়াম Almonds, Cashews ও Walnuts — কোনো রং নেই, কোনো প্রিজার্ভেটিভ নেই।</p>
+      <div class="badges">
+        <div class="badge">১০০% অর্গানিক</div>
+        <div class="badge">প্রিজার্ভেটিভ মুক্ত</div>
+        <div class="badge">ফ্রি ডেলিভারি</div>
+      </div>
+      <div class="cta-grp">
+        <a href="#order" class="btn-gold">এখনই অর্ডার করুন ↓</a>
+        <a href="#products" class="btn-outline">প্রোডাক্ট দেখুন</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-card">
+        <span class="hero-emoji">🥜</span>
+        <h3>NUTRIs Premium Collection</h3>
+        <p>Almonds · Cashews · Walnuts · Mixed Jars</p>
+      </div>
+      <div class="stock-live">
+        <div class="dot"></div>
+        মাত্র <strong id="hero-stock">&nbsp;47&nbsp;</strong> প্যাক বাকি — লাইভ স্টক!
+      </div>
+      <div class="viewers-box">
+        👁 এখন <strong id="viewers-hero">23</strong> জন এই পেজ দেখছেন
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMER -->
+<div class="timer-wrap">
+  <div class="timer-lbl">⚡ পরের স্টক আসছে পরের রবিবার — এই সপ্তাহের অফার শেষ হচ্ছে</div>
+  <div class="timer-boxes">
+    <div class="tbox"><span class="tnum" id="t-d">00</span><div class="tunit">দিন</div></div>
+    <div class="tbox"><span class="tnum" id="t-h">00</span><div class="tunit">ঘন্টা</div></div>
+    <div class="tbox"><span class="tnum" id="t-m">00</span><div class="tunit">মিনিট</div></div>
+    <div class="tbox"><span class="tnum" id="t-s">00</span><div class="tunit">সেকেন্ড</div></div>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="bg-warm" id="products">
+  <div class="inner">
+    <div class="s-lbl">আমাদের কালেকশন</div>
+    <h2 class="s-title">প্রিমিয়াম নাটস সিলেক্ট করুন</h2>
+    <p class="s-sub">প্রতিটি নাটস সর্বোচ্চ মান নিশ্চিত করে প্যাকেজ করা হয়।</p>
+    <div class="p-grid" id="product-cards"></div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section class="bg-dark">
+  <div class="inner">
+    <div class="s-lbl" style="color:var(--gold-l)">কেন নাটস?</div>
+    <h2 class="s-title">প্রতিদিন নাটস খাওয়ার উপকারিতা</h2>
+    <div class="b-grid">
+      <div class="b-item"><div class="b-num">০১</div><div class="b-text"><h5>হার্ট সুস্থ রাখে</h5><p>ওমেগা-৩ ও মনোআনস্যাচুরেটেড ফ্যাট কোলেস্টেরল নিয়ন্ত্রণ করে।</p></div></div>
+      <div class="b-item"><div class="b-num">০২</div><div class="b-text"><h5>ব্রেন শার্প করে</h5><p>Walnut-এর ওমেগা-৩ স্মৃতিশক্তি ও ব্রেনের কার্যক্ষমতা বাড়ায়।</p></div></div>
+      <div class="b-item"><div class="b-num">০৩</div><div class="b-text"><h5>ওজন নিয়ন্ত্রণে রাখে</h5><p>প্রোটিন ও ফাইবার সমৃদ্ধ, দীর্ঘক্ষণ পেট ভরা রাখে।</p></div></div>
+      <div class="b-item"><div class="b-num">০৪</div><div class="b-text"><h5>এনার্জি বুস্ট</h5><p>সকালে এক মুঠো নাটস সারাদিনের শক্তির যোগান দেয়।</p></div></div>
+      <div class="b-item"><div class="b-num">০৫</div><div class="b-text"><h5>রোগ প্রতিরোধ ক্ষমতা</h5><p>Zinc, Vitamin E ও অ্যান্টিঅক্সিডেন্ট ইমিউনিটি শক্তিশালী করে।</p></div></div>
+      <div class="b-item"><div class="b-num">০৬</div><div class="b-text"><h5>ত্বক ও চুলের যত্ন</h5><p>প্রাকৃতিক তেল ও ভিটামিন ত্বক উজ্জ্বল ও চুল মজবুত করে।</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section>
+  <div class="inner">
+    <div class="s-lbl">কেন NUTRIs?</div>
+    <h2 class="s-title">অন্যদের থেকে আমরা কেন আলাদা</h2>
+    <div class="w-grid">
+      <div class="w-card"><div class="w-icon">🌱</div><h4>১০০% ন্যাচারাল</h4><p>কোনো কৃত্রিম রং, ফ্লেভার বা প্রিজার্ভেটিভ ছাড়া।</p></div>
+      <div class="w-card"><div class="w-icon">✈️</div><h4>সরাসরি আমদানি</h4><p>বিশ্বের সেরা উৎস থেকে মধ্যস্থতাকারী ছাড়াই।</p></div>
+      <div class="w-card"><div class="w-icon">🔒</div><h4>প্রিমিয়াম প্যাকেজিং</h4><p>রিসিলেবল প্যাক — তাজা ও ক্রিস্পি গ্যারান্টিড।</p></div>
+      <div class="w-card"><div class="w-icon">🚚</div><h4>ফ্রি ডেলিভারি</h4><p>সারাবাংলাদেশে ফ্রি হোম ডেলিভারি।</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="bg-warm2">
+  <div class="inner">
+    <div class="s-lbl">কাস্টমার রিভিউ</div>
+    <h2 class="s-title">হাজারো সন্তুষ্ট গ্রাহকের কথা</h2>
+    <div class="r-grid">
+      <div class="r-card"><div class="r-stars">★★★★★</div><p>"Almonds গুলো এত ফ্রেশ! বিশ্বাসই হচ্ছিল না। প্রতিমাসে অর্ডার করি।"</p><div class="reviewer"><div class="r-av">রা</div><div><div class="r-name">রাহেলা বেগম</div><div class="r-loc">ঢাকা, গুলশান</div></div></div></div>
+      <div class="r-card"><div class="r-stars">★★★★★</div><p>"Mixed Jar অর্ডার করেছিলাম। প্যাকেজিং দেখে মুগ্ধ! গিফটেও পারফেক্ট।"</p><div class="reviewer"><div class="r-av">তা</div><div><div class="r-name">তানভীর আহমেদ</div><div class="r-loc">চট্টগ্রাম</div></div></div></div>
+      <div class="r-card"><div class="r-stars">★★★★★</div><p>"Walnuts কোয়ালিটি সত্যিই প্রিমিয়াম। ব্রেন ফাংশন অনেক ভালো লাগছে!"</p><div class="reviewer"><div class="r-av">নু</div><div><div class="r-name">নুসরাত জাহান</div><div class="r-loc">সিলেট</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER -->
+<section id="order">
+  <div class="inner">
+    <div class="s-lbl">অর্ডার করুন</div>
+    <h2 class="s-title">আজই আপনার NUTRIs অর্ডার করুন</h2>
+    <div class="o-grid">
+      <div>
+        <div class="g-box">
+          <h4>🛡️ ১০০% মানি-ব্যাক গ্যারান্টি</h4>
+          <p>পণ্য পেয়ে সন্তুষ্ট না হলে ৭ দিনের মধ্যে ফেরত দিন — সম্পূর্ণ টাকা ফেরত।</p>
+        </div>
+        <ul class="trust-list">
+          <li>ফ্রি হোম ডেলিভারি সারাবাংলাদেশে</li>
+          <li>ক্যাশ অন ডেলিভারি সুবিধা</li>
+          <li>bKash / City Bank / Dutch Bangla</li>
+          <li>অর্ডারের ২৪–৪৮ ঘন্টার মধ্যে ডেলিভারি</li>
+          <li>প্রতিটি পণ্য ফ্রেশনেস-সিল করা</li>
+          <li>প্রতি রবিবার নতুন স্টক — আগে অর্ডার আগে পাবেন</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="o-form" id="order-form-wrap">
+          <h3>অর্ডার ফর্ম পূরণ করুন</h3>
+          <p class="f-sub">নিচের তথ্য দিন, আমরা কনফার্ম করব।</p>
+
+          <div class="fg">
+            <label>পণ্য সিলেক্ট করুন *</label>
+            <div class="p-opts" id="order-opts"></div>
+          </div>
+
+          <div class="fg">
+            <label>আপনার নাম *</label>
+            <input type="text" id="f-name" placeholder="পূর্ণ নাম লিখুন">
+          </div>
+          <div class="fg">
+            <label>মোবাইল নম্বর *</label>
+            <input type="tel" id="f-phone" placeholder="01XXXXXXXXX">
+          </div>
+          <div class="fg">
+            <label>ডেলিভারি ঠিকানা *</label>
+            <textarea id="f-addr" placeholder="বাড়ি/ফ্ল্যাট, রাস্তা, এলাকা, জেলা"></textarea>
+          </div>
+
+          <div class="fg">
+            <label>পেমেন্ট পদ্ধতি *</label>
+            <div class="pay-btns">
+              <div class="pay-btn sel" onclick="selPay(this,'cod')">🚚 COD</div>
+              <div class="pay-btn" onclick="selPay(this,'bkash')">📱 bKash</div>
+              <div class="pay-btn" onclick="selPay(this,'bank')">🏦 ব্যাংক</div>
+            </div>
+            <div class="pay-info-box" id="pi-bkash">💳 bKash: <strong id="bkash-num">01XXXXXXXXX</strong> — পাঠিয়ে Transaction ID দিন।</div>
+            <div class="pay-info-box" id="pi-bank">🏦 City Bank A/C: <strong id="city-ac">XXXXXXXXXXXX</strong><br>🏦 Dutch Bangla A/C: <strong id="dbbl-ac">XXXXXXXXXXXX</strong></div>
+          </div>
+
+          <div class="o-total">মোট: ৳<span id="total-show">0</span> + ডেলিভারি ফ্রি</div>
+          <button class="btn-submit" id="order-btn" onclick="placeOrder()">✅ অর্ডার কনফার্ম করুন</button>
+          <p class="o-note">অর্ডারের পর আমাদের টিম ২–৪ ঘন্টার মধ্যে কল করবে।</p>
+        </div>
+
+        <div class="success-box" id="success-box">
+          <div style="font-size:52px;margin-bottom:10px">✅</div>
+          <h3>অর্ডার সফল!</h3>
+          <p>ধন্যবাদ! শীঘ্রই কল করব।<br>অর্ডার নম্বর: <strong id="success-id"></strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="f-logo">NUTRIs</span>
+  <div class="f-links">
+    <a href="#">আমাদের সম্পর্কে</a>
+    <a href="#">যোগাযোগ</a>
+    <a href="#">রিটার্ন পলিসি</a>
+  </div>
+  <p>📞 <span id="f-phone">01XXXXXXXXX</span> &nbsp;|&nbsp; ✉ hello@nutris.com.bd</p>
+  <p style="margin-top:10px;font-size:11px;">© 2025 NUTRIs. All rights reserved.</p>
+</footer>
+
+<!-- FLASH POPUP -->
+<div class="flash" id="flash"></div>
+
+<script>
+// ─────────────────────────────────────────────
+//  SHARED DATABASE (localStorage)
+//  Both index.html and admin.html use same keys
+// ─────────────────────────────────────────────
+const KEYS = {
+  products: 'nutris_products',
+  orders:   'nutris_orders',
+  settings: 'nutris_settings',
+};
+
+const DEFAULT_PRODUCTS = [
+  {id:1,emoji:'🌰',name:'Premium Almonds',  size:'২৫০ গ্রাম',oldPrice:950, price:750, stock:47,desc:'কাঁচা ও রোস্টেড আমন্ড। হার্ট সুস্থ রাখে, শক্তি বাড়ায়।',tag:'bestseller'},
+  {id:2,emoji:'🥜',name:'Premium Cashews',  size:'২৫০ গ্রাম',oldPrice:1050,price:850, stock:38,desc:'ক্রিমি কাজুবাদাম। মাথার খোরাক ও ইমিউনিটি বুস্টার।',tag:'bestseller'},
+  {id:3,emoji:'🪨',name:'Premium Walnuts',  size:'২৫০ গ্রাম',oldPrice:1250,price:990, stock:12,desc:'ব্রেন ফুড নম্বর ওয়ান। ওমেগা-৩ সমৃদ্ধ।',tag:'limited'},
+  {id:4,emoji:'🫙',name:'NUTRIs Mixed Jar', size:'৫০০ গ্রাম',oldPrice:2800,price:2190,stock:9, desc:'Almonds + Cashews + Walnuts একটি প্রিমিয়াম জারে।',tag:'limited'},
+];
+
+function getProducts(){
+  try{ return JSON.parse(localStorage.getItem(KEYS.products)) || DEFAULT_PRODUCTS; }
+  catch(e){ return DEFAULT_PRODUCTS; }
+}
+function getOrders(){
+  try{ return JSON.parse(localStorage.getItem(KEYS.orders)) || []; }
+  catch(e){ return []; }
+}
+function getSettings(){
+  try{ return JSON.parse(localStorage.getItem(KEYS.settings)) || {}; }
+  catch(e){ return {}; }
+}
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let selProductId = 1;
+let selPayment   = 'cod';
+
+// ─────────────────────────────────────────────
+//  RENDER PRODUCT CARDS (shop section)
+// ─────────────────────────────────────────────
+function renderCards(){
+  const products = getProducts();
+  const grid = document.getElementById('product-cards');
+  if(!grid) return;
+  grid.innerHTML = products.map(p => {
+    const pct  = Math.max(5, Math.min(95, Math.round(p.stock / (p.stock + 40) * 100)));
+    const tag  = p.tag === 'bestseller'
+      ? '<div class="tag-best">Best Seller</div>'
+      : p.tag === 'limited' ? '<div class="tag-lim">Limited</div>' : '';
+    return `
+      <div class="p-card">
+        <div class="p-img"><span style="font-size:60px">${p.emoji}</span>${tag}</div>
+        <div class="p-body">
+          <h3>${p.name}</h3>
+          <p>${p.desc}</p>
+          <div class="s-bar-lbl" id="cl-${p.id}">⚠ মাত্র ${p.stock}টি বাকি</div>
+          <div class="s-bar"><div class="s-fill" id="cf-${p.id}" style="width:${pct}%"></div></div>
+          <div class="p-meta">
+            <div>
+              <div class="p-old">৳${p.oldPrice.toLocaleString()}</div>
+              <span class="p-new">৳${p.price.toLocaleString()}</span>
+              <span class="p-unit">/${p.size}</span>
+            </div>
+            <a href="#order" class="btn-order" onclick="preselect(${p.id})">অর্ডার করুন</a>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────
+//  RENDER ORDER FORM OPTIONS
+// ─────────────────────────────────────────────
+function renderOpts(){
+  const products = getProducts();
+  const wrap = document.getElementById('order-opts');
+  if(!wrap) return;
+  wrap.innerHTML = products.map((p,i) => `
+    <label class="p-opt ${i===0?'sel':''}" onclick="selProduct(this,${p.id},${p.price})">
+      <input type="radio" name="prod" ${i===0?'checked':''}>
+      <span class="o-emoji">${p.emoji}</span>
+      <div class="o-info">
+        <div class="o-name">${p.name}</div>
+        <div class="o-size">${p.size}</div>
+        <div class="o-stock" id="ol-${p.id}">মাত্র ${p.stock}টি বাকি</div>
+      </div>
+      <div class="o-price">
+        <div class="o-old">৳${p.oldPrice.toLocaleString()}</div>
+        <div class="o-new">৳${p.price.toLocaleString()}</div>
+      </div>
+    </label>`).join('');
+  const first = products[0];
+  if(first){ selProductId=first.id; setTotal(first.price); }
+}
+
+function selProduct(el, id, price){
+  document.querySelectorAll('.p-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  selProductId = id;
+  setTotal(price);
+}
+
+function preselect(id){
+  selProductId = id;
+  document.querySelectorAll('.p-opt').forEach(el => {
+    const m = el.getAttribute('onclick')||'';
+    if(m.includes(','+id+',')||m.includes(','+id+')')){
+      el.classList.add('sel');
+      const pm = m.match(/,(\d+)\)$/);
+      if(pm) setTotal(parseInt(pm[1]));
+    } else el.classList.remove('sel');
+  });
+}
+
+function setTotal(price){
+  const el = document.getElementById('total-show');
+  if(el) el.textContent = price.toLocaleString();
+}
+
+function selPay(el, method){
+  document.querySelectorAll('.pay-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  selPayment = method;
+  document.getElementById('pi-bkash').classList.remove('show');
+  document.getElementById('pi-bank').classList.remove('show');
+  if(method==='bkash') document.getElementById('pi-bkash').classList.add('show');
+  if(method==='bank')  document.getElementById('pi-bank').classList.add('show');
+}
+
+// ─────────────────────────────────────────────
+//  UPDATE STOCK DISPLAYS
+// ─────────────────────────────────────────────
+function refreshStock(){
+  const products = getProducts();
+  const total    = products.reduce((s,p)=>s+p.stock, 0);
+  // Top bars
+  ['bar-stock','hero-stock'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=total; });
+  // Per-product
+  products.forEach(p => {
+    const cl = document.getElementById('cl-'+p.id);
+    const cf = document.getElementById('cf-'+p.id);
+    const ol = document.getElementById('ol-'+p.id);
+    if(cl) cl.textContent = '⚠ মাত্র '+p.stock+'টি বাকি';
+    if(ol) ol.textContent = 'মাত্র '+p.stock+'টি বাকি';
+    if(cf){ const pct=Math.max(5,Math.min(95,Math.round(p.stock/(p.stock+40)*100))); cf.style.width=pct+'%'; }
+  });
+  // Settings-driven payment info
+  const s = getSettings();
+  const bn=document.getElementById('bkash-num'); if(bn&&s.bkash) bn.textContent=s.bkash;
+  const ca=document.getElementById('city-ac');   if(ca&&s.city)  ca.textContent=s.city;
+  const da=document.getElementById('dbbl-ac');   if(da&&s.dbbl)  da.textContent=s.dbbl;
+  const fp=document.getElementById('f-phone');   if(fp&&s.phone) fp.textContent=s.phone;
+}
+
+// ─────────────────────────────────────────────
+//  PLACE ORDER
+// ─────────────────────────────────────────────
+function placeOrder(){
+  const name  = document.getElementById('f-name').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+  const addr  = document.getElementById('f-addr').value.trim();
+  if(!name||!phone||!addr){ alert('অনুগ্রহ করে নাম, মোবাইল ও ঠিকানা পূরণ করুন।'); return; }
+
+  const products = getProducts();
+  const prod = products.find(p=>p.id===selProductId);
+  if(!prod){ alert('পণ্য সিলেক্ট করুন।'); return; }
+  if(prod.stock<=0){ alert('দুঃখিত! এই পণ্যটি স্টকে নেই।'); return; }
+
+  const btn = document.getElementById('order-btn');
+  btn.textContent='পাঠানো হচ্ছে...';
+  btn.disabled=true;
+
+  const orderId = 'NTR-'+Date.now().toString().slice(-6);
+  const order = {
+    id:orderId, name, phone, addr,
+    product: prod.name, productId: prod.id,
+    price: prod.price, payment: selPayment,
+    status:'new',
+    ts: new Date().toLocaleString('bn-BD')
+  };
+
+  // Save order
+  const orders = getOrders();
+  orders.push(order);
+  localStorage.setItem(KEYS.orders, JSON.stringify(orders));
+
+  // Reduce stock LIVE
+  prod.stock = Math.max(0, prod.stock-1);
+  localStorage.setItem(KEYS.products, JSON.stringify(products));
+
+  // Refresh all displays immediately
+  refreshStock();
+
+  // Show success
+  document.getElementById('order-form-wrap').style.display='none';
+  document.getElementById('success-box').classList.add('show');
+  document.getElementById('success-id').textContent=orderId;
+}
+
+// ─────────────────────────────────────────────
+//  TIMER — next Sunday midnight
+// ─────────────────────────────────────────────
+function startTimer(){
+  function nextSun(){
+    const now=new Date(), d=now.getDay();
+    const n=new Date(now);
+    n.setDate(now.getDate()+(d===0?7:7-d));
+    n.setHours(0,0,0,0);
+    return n.getTime();
+  }
+  const end=nextSun();
+  setInterval(()=>{
+    const diff=Math.max(0,end-Date.now());
+    const dd=Math.floor(diff/86400000);
+    const hh=Math.floor((diff%86400000)/3600000);
+    const mm=Math.floor((diff%3600000)/60000);
+    const ss=Math.floor((diff%60000)/1000);
+    document.getElementById('t-d').textContent=String(dd).padStart(2,'0');
+    document.getElementById('t-h').textContent=String(hh).padStart(2,'0');
+    document.getElementById('t-m').textContent=String(mm).padStart(2,'0');
+    document.getElementById('t-s').textContent=String(ss).padStart(2,'0');
+  },1000);
+}
+
+// ─────────────────────────────────────────────
+//  FAKE VIEWER COUNT
+// ─────────────────────────────────────────────
+function startViewers(){
+  let v=18+Math.floor(Math.random()*12);
+  setInterval(()=>{
+    v+=Math.random()<.5?1:-1;
+    v=Math.max(12,Math.min(v,40));
+    ['viewers-top','viewers-hero'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=v;});
+  },4500);
+}
+
+// ─────────────────────────────────────────────
+//  FLASH NOTIFICATIONS
+// ─────────────────────────────────────────────
+const FLASHES=[
+  '🛍 রাহেলা বেগম (ঢাকা) এইমাত্র Almonds অর্ডার করেছেন',
+  '🛍 তানভীর ভাই (চট্টগ্রাম) Mixed Jar অর্ডার করেছেন',
+  '🛍 নুসরাত (সিলেট) Walnuts অর্ডার করেছেন',
+  '🛍 করিম সাহেব (রাজশাহী) Cashews অর্ডার করেছেন',
+  '🛍 মিতু আপা (খুলনা) Mixed Jar অর্ডার করেছেন',
+  '🛍 শফিক ভাই (বরিশাল) Almonds অর্ডার করেছেন',
+  '🛍 সুমাইয়া (ময়মনসিংহ) Cashews অর্ডার করেছেন',
+];
+let fi=0;
+function doFlash(){
+  const el=document.getElementById('flash');
+  el.textContent=FLASHES[fi%FLASHES.length]; fi++;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),4500);
+}
+function startFlash(){ setTimeout(()=>{doFlash();setInterval(doFlash,20000);},10000); }
+
+// ─────────────────────────────────────────────
+//  LISTEN FOR ADMIN CHANGES (real-time sync)
+//  When admin updates products/settings → customer page auto-refreshes
+// ─────────────────────────────────────────────
+window.addEventListener('storage', e => {
+  if(e.key===KEYS.products){
+    renderCards();
+    renderOpts();
+    refreshStock();
+  }
+  if(e.key===KEYS.settings){
+    refreshStock(); // updates payment numbers etc
+  }
+});
+
+// ─────────────────────────────────────────────
+//  BOOT
+// ─────────────────────────────────────────────
+renderCards();
+renderOpts();
+refreshStock();
+startTimer();
+startViewers();
+startFlash();
+</script>
+</body>
+</html>
